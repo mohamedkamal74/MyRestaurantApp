@@ -18,5 +18,10 @@ namespace MyRestaurant.Areas.Admin.Controllers
         {
             return View(await _context.Categories.ToListAsync());
         }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
     }
 }

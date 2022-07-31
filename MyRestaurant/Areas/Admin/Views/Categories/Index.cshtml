@@ -3,5 +3,44 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<div class="whiteBackGround border">
+    <div class="row">
+        <div class="col-6">
+            <h2 class="text-info">Categories List</h2>
+        </div>
+        <div class="col-6 text-right">
+            <partial name="_CreateButton" />
+        </div>
+    </div>
+    <div>
+        @if (!Model.Any())
+        {
+            <h3 class="text-danger">No Category ......</h3>
+        }
+        else
+        {
+            <table class="d-lg-table table-striped border">
+                <tr class="table-secondary">
+                    <th>
+                        @Html.DisplayNameFor(m=>m.Name)
+                    </th>
+                    <th>
+
+                    </th>
+                </tr>
+                @foreach (var item in Model)
+               {
+                  <tr>
+                      <td>
+                          @Html.DisplayFor(m=>item.Name)
+                      </td>
+                      <td>
+                          buttons here
+                      </td>
+                  </tr> 
+               }
+            </table>
+        }
+    </div>
+</div>
 
