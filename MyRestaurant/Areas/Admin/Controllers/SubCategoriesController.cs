@@ -43,30 +43,36 @@ namespace MyRestaurant.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult>Create(CategoryAndSubcategoryViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var categoryandcategoryVm = new CategoryAndSubcategoryViewModel
+                var existSubcategory = await _context.SubCategories.Include(m => m.Category).Where(m => m.Category.Id == model.SubCategory.CategoryId && m.Name == model.SubCategory.Name).ToArrayAsync();
+                if (existSubcategory.Any())
+                     
                 {
-                    CategoriesList = await _context.Categories.ToListAsync(),
-                    SubCategory = model.SubCategory,
-                    SubCategoriesList = await _context.SubCategories.OrderBy(m => m.Name).Select(x => x.Name).Distinct().ToListAsync()
+                    StatusMessage = "Error : this sub category exist under " + existSubcategory.FirstOrDefault().Category.Name +"Category";
+                    
+                }
+                else
+                {
+                    _context.SubCategories.Add(model.SubCategory);
+                    await _context.SaveChangesAsync();
+                    _toastNotification.AddSuccessToastMessage("Sub Category Created Succesfully");
+                    return RedirectToAction(nameof(Index));
+                }
 
-                };
-                return View(categoryandcategoryVm);
             }
-            var existSubcategory=_context.SubCategories.Include(m=>m.Category).Where(m=>m.Category.Id==model.SubCategory.CategoryId&&m.Name==model.SubCategory.Name);
-            if (!existSubcategory.Any())
+            var categoryandcategoryVm = new CategoryAndSubcategoryViewModel
             {
-                _context.SubCategories.Add(model.SubCategory);
-                await _context.SaveChangesAsync();
-                _toastNotification.AddSuccessToastMessage("Sub Category Created Succesfully");
-                return RedirectToAction(nameof(Index));
-            }
-            else
-            {
-                ModelState.AddModelError("Name", "this category is already exist with same sub category");
-                return View(model);
-            }
+                CategoriesList = await _context.Categories.ToListAsync(),
+                SubCategory = model.SubCategory,
+                SubCategoriesList = await _context.SubCategories.OrderBy(m => m.Name).Select(x => x.Name).Distinct().ToListAsync(),
+                StatusMessage = StatusMessage
+
+            };
+            return View(categoryandcategoryVm);
+
+
+           
            
         }
     }
