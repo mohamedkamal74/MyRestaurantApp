@@ -7,7 +7,6 @@ namespace MyRestaurant.ViewModels
     {
         public IEnumerable<Category> CategoriesList { get; set; }
         public SubCategory SubCategory { get; set; }
-        public List<string> SubCategoriesList { get; set; }
         public string StatusMessage { get; set; }
 
 

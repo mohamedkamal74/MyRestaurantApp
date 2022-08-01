@@ -9,52 +9,76 @@
 
 <partial name="_StatusMessage" model="@Model.StatusMessage" />
 
-    <div class="whiteBackGround border row">
-        <div class="col-8 border-right">
-<form method="post" asp-action="Create">
-        <div asp-validation-summary=ModelOnly class="text-danger"></div>
-         <div class="form-group row">
-            <div class="col-3">
-                <label asp-for="SubCategory.CategoryId" class="col-form-lable"></label>
+<div class="whiteBackGround border row">
+    <div class="col-8 border-right">
+        <form method="post" asp-action="Create">
+            <div asp-validation-summary=ModelOnly class="text-danger"></div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.CategoryId" class="col-form-lable"></label>
+                </div>
+                <div class="col-5">
+                    <select asp-for="SubCategory.CategoryId" class="form-control" id="ddlCategories"
+                            asp-items="@(new SelectList(Model.CategoriesList,"Id","Name"))">
+                        <option value="">select category .....</option>
+                    </select>
+                    <span asp-validation-for="SubCategory.Name" class="text-danger"></span>
+                </div>
             </div>
-            <div class="col-5">
-                <select asp-for="SubCategory.CategoryId" class="form-control" id="ddlCategories"
-                asp-items="@(new SelectList(Model.CategoriesList,"Id","Name"))">
-                    <option value="">select category .....</option>
-                </select>
-                <span asp-validation-for="SubCategory.Name" class="text-danger"></span>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label asp-for="SubCategory.Name" class="col-form-lable"></label>
+                </div>
+                <div class="col-5">
+                    <input asp-for="SubCategory.Name" class="form-control" />
+                    <span asp-validation-for="SubCategory.Name" class="text-danger"></span>
+                </div>
             </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-3">
-                <label asp-for="SubCategory.Name" class="col-form-lable"></label>
+            <div class="form-group row">
+                <div class="col-5 offset-3">
+                    <partial name="_CreateAndBackPartial" />
+                </div>
             </div>
-            <div class="col-5">
-                <input asp-for="SubCategory.Name" class="form-control" />
-                <span asp-validation-for="SubCategory.Name" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-5 offset-3">
-                <partial name="_CreateAndBackPartial" />
-            </div>
-        </div>
-</form>
-</div>
-<div class="col-3 offset-1">
-        @if (Model.SubCategoriesList.Any())
-        {
-            <p class="text-danger">Existing Sub Categories :</p>
-            <div id="divSubCategoriesList">
-
-            </div>
-        }
-
-</div>
+        </form>
     </div>
+    <div class="col-3 offset-1">
+
+        <p class="text-danger">Existing Sub Categories :</p>
+        <div id="divSubCategoriesList">
+        </div>
+
+
+    </div>
+</div>
 
 
 @section Scripts{
-    <partial name="_ValidationScriptsPartial" />
+<partial name="_ValidationScriptsPartial" />
+<script>
+        function updateSubCategoriesList(){
+            var selectedCategory=document.getElementById('ddlCategories').value;
+            $list=$('#divSubCategoriesList');
+            $.ajax({
+    url:'/Admin/SubCategories/GetSubCategories/'+selectedCategory,
+    type:'GET',
+    dataType:'text',
+    success:function (data){
+        results=JSON.parse(data);
+        $list.html('');
+        $list.append('<ul class="list-group">')
+        for(i in results){
+            $list.append('<li class="list-group-item">'+ results[i].text + '</li>')
+        }
+        $list.append('</ul>');
+    }
+            });
+        }
+ $(document).ready(function(){
+     updateSubCategoriesList();
+ });
+ $('#ddlCategories').on("change",function(){
+  updateSubCategoriesList();
+ });
+</script>
 }
 
