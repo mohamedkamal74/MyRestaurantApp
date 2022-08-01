@@ -65,5 +65,38 @@ namespace MyRestaurant.Areas.Admin.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+                return NotFound();
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            if (category == null)
+                return NotFound();
+            return View(category);
+        }
+        [HttpPost]
+        public async Task<IActionResult>Delete(Category model)
+        {
+            if(model != null)
+            {
+                _context.Categories.Remove(model);
+              await  _context.SaveChangesAsync();
+                _toastNotification.AddErrorToastMessage("category Deleted");
+                return RedirectToAction(nameof(Index));
+            }
+            return View();
+        }
+
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            if (category == null)
+                return NotFound();
+            return View(category);
+        }
+
     }
 }
