@@ -15,6 +15,9 @@ namespace MyRestaurant.Areas.Admin.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IToastNotification _toastNotification;
 
+        [TempData]
+        public string StatusMessage { get; set; }
+
         public SubCategoriesController(ApplicationDbContext context, IToastNotification toastNotification)
         {
             _context = context;
@@ -35,6 +38,36 @@ namespace MyRestaurant.Areas.Admin.Controllers
 
             };
             return View(categoryandcategoryVm);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult>Create(CategoryAndSubcategoryViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var categoryandcategoryVm = new CategoryAndSubcategoryViewModel
+                {
+                    CategoriesList = await _context.Categories.ToListAsync(),
+                    SubCategory = model.SubCategory,
+                    SubCategoriesList = await _context.SubCategories.OrderBy(m => m.Name).Select(x => x.Name).Distinct().ToListAsync()
+
+                };
+                return View(categoryandcategoryVm);
+            }
+            var existSubcategory=_context.SubCategories.Include(m=>m.Category).Where(m=>m.Category.Id==model.SubCategory.CategoryId&&m.Name==model.SubCategory.Name);
+            if (!existSubcategory.Any())
+            {
+                _context.SubCategories.Add(model.SubCategory);
+                await _context.SaveChangesAsync();
+                _toastNotification.AddSuccessToastMessage("Sub Category Created Succesfully");
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                ModelState.AddModelError("Name", "this category is already exist with same sub category");
+                return View(model);
+            }
+           
         }
     }
 }

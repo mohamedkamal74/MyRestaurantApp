@@ -39,6 +39,13 @@
 </form>
 </div>
 <div class="col-3 offset-1">
+        @if (Model.SubCategoriesList.Any())
+        {
+            <p class="text-danger">Existing Sub Categories :</p>
+            <div id="divSubCategoriesList">
+
+            </div>
+        }
 
 </div>
     </div>
