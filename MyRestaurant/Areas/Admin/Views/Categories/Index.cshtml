@@ -19,7 +19,7 @@
         }
         else
         {
-            <table class="d-lg-table table-striped border">
+            <table class="table table-striped border">
                 <tr class="table-secondary">
                     <th>
                         @Html.DisplayNameFor(m=>m.Name)
@@ -34,8 +34,8 @@
                       <td>
                           @Html.DisplayFor(m=>item.Name)
                       </td>
-                      <td>
-                          buttons here
+                      <td style="width:150px">
+                         <partial name="_OperationButtonsPartial" model="@item.Id"/>
                       </td>
                   </tr> 
                }

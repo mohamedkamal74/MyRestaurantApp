@@ -31,15 +31,39 @@ namespace MyRestaurant.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Category model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View(model);
-            }
-            _context.Categories.Add(model);
-           await _context.SaveChangesAsync();
-            _toastNotification.AddSuccessToastMessage("Category Created Succesfully");
+                _context.Categories.Add(model);
+                await _context.SaveChangesAsync();
+                 _toastNotification.AddSuccessToastMessage("Category Created Succesfully");
 
-            return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index));
+            }
+          return View(model);
         }
+
+        public async Task<IActionResult>Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            if (category == null)
+                return NotFound();
+            return View(category);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult>Edit(Category model)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Categories.Update(model);
+                await _context.SaveChangesAsync();
+                _toastNotification.AddInfoToastMessage("Category Updated Succesufully");
+                return RedirectToAction(nameof(Index));
+            }
+            return View(model);
+        }
+
     }
 }
