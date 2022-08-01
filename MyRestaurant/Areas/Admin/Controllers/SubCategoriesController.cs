@@ -74,11 +74,94 @@ namespace MyRestaurant.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult>GetSubCategories(int id)
+        public async Task<IActionResult> GetSubCategories(int id)
         {
             List<SubCategory> subCategories = new List<SubCategory>();
             subCategories = await _context.SubCategories.Where(x => x.CategoryId == id).ToListAsync();
             return Json(new SelectList(subCategories, "Id", "Name"));
+        }
+
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
+            var subcategory = await _context.SubCategories.FindAsync(id);
+            if (subcategory == null)
+                return NotFound();
+            var categoryandcategoryVm = new CategoryAndSubcategoryViewModel
+            {
+                CategoriesList = await _context.Categories.ToListAsync(),
+                SubCategory = subcategory
+
+            };
+            return View(categoryandcategoryVm);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(CategoryAndSubcategoryViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var existSubcategory = await _context.SubCategories.Include(m => m.Category).Where(m => m.Category.Id == model.SubCategory.CategoryId
+                && m.Name == model.SubCategory.Name && m.Id != model.SubCategory.Id).ToArrayAsync();
+                if (existSubcategory.Any())
+
+                {
+                    StatusMessage = "Error : this sub category exist under " + existSubcategory.FirstOrDefault().Category.Name + "Category";
+
+                }
+                else
+                {
+                    _context.SubCategories.Update(model.SubCategory);
+                    await _context.SaveChangesAsync();
+                    _toastNotification.AddInfoToastMessage("Sub Category Updated Succesfully");
+                    return RedirectToAction(nameof(Index));
+                }
+
+            }
+            var categoryandcategoryVm = new CategoryAndSubcategoryViewModel
+            {
+                CategoriesList = await _context.Categories.ToListAsync(),
+                SubCategory = model.SubCategory,
+                StatusMessage = StatusMessage
+
+            };
+            return View(categoryandcategoryVm);
+
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+                return NotFound();
+            var subcategory = await _context.SubCategories.Include(x=>x.Category).FirstOrDefaultAsync(x=>x.Id==id);
+            if (subcategory == null)
+                return NotFound();
+            return View(subcategory);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult>Delete(SubCategory model)
+        {
+            if(model != null)
+            {
+                _context.SubCategories.Remove(model);
+                await _context.SaveChangesAsync();
+                _toastNotification.AddErrorToastMessage("Sub category Deleted");
+                return RedirectToAction(nameof(Index));
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+            var subcategory = await _context.SubCategories.Include(x => x.Category).FirstOrDefaultAsync(x => x.Id == id);
+            if (subcategory == null)
+                return NotFound();
+            return View(subcategory);
         }
     }
 }
