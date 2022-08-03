@@ -1,55 +1,58 @@
 ﻿@model MenuItemViewmodel
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Edit";
 }
 
 <br />
-<h2 class="text-info"> Create Menu Item</h2>
+<h2 class="text-info"> Edit Menu Item</h2>
 <br />
-<form method="post" asp-action="Create" enctype="multipart/form-data">
-    <div class="whiteBackGround border">
+<form method="post" asp-action="Edit" enctype="multipart/form-data">
+    <div class="whiteBackGround border row">
+
+        <div class="col-8">
         <div asp-validation-summary=ModelOnly class="text-danger"></div>
+        <input type="hidden" asp-for="MenuItem.Id" />
         <div class="form-group row">
-            <div class="col-2">
+            <div class="col-4">
                 <label asp-for="MenuItem.Name" class="col-form-lable"></label>
             </div>
-            <div class="col-5">
+            <div class="col-8">
                 <input asp-for="MenuItem.Name" class="form-control" />
                 <span asp-validation-for="MenuItem.Name" class="text-danger"></span>
             </div>    
         </div>
         <div class="form-group row">
-            <div class="col-2">
+            <div class="col-4">
                 <label asp-for="MenuItem.Description" class="col-form-lable"></label>
             </div>
-            <div class="col-5">
+            <div class="col-8">
                 <textarea asp-for="MenuItem.Description" class="form-control" ></textarea>
                 <span asp-validation-for="MenuItem.Description" class="text-danger"></span>
             </div>    
         </div>
         <div class="form-group row">
-            <div class="col-2">
+            <div class="col-4">
                 <label asp-for="MenuItem.Price" class="col-form-lable"></label>
             </div>
-            <div class="col-5">
+            <div class="col-8">
                 <input asp-for="MenuItem.Price" class="form-control" />
                 <span asp-validation-for="MenuItem.Price" class="text-danger"></span>
             </div>    
         </div>
         <div class="form-group row">
-            <div class="col-2">
+            <div class="col-4">
                 <label asp-for="MenuItem.Image" class="col-form-lable"></label>
             </div>
-            <div class="col-5">
+            <div class="col-8">
                 <input type="file" asp-for="MenuItem.Image" class="form-control" />
                 <span asp-validation-for="MenuItem.Image" class="text-danger"></span>
             </div>    
         </div>
         <div class="form-group row">
-            <div class="col-2">
+            <div class="col-4">
                 <label asp-for="MenuItem.CategoryId" class="col-form-lable"></label>
             </div>
-            <div class="col-5">
+            <div class="col-8">
                 <select id="ddlCategories" asp-for="MenuItem.CategoryId" class="form-control" asp-items="@(new SelectList(Model.CategoriesList,"Id","Name"))">
                     <option value="">select Category .....</option>
                 </select>
@@ -58,13 +61,13 @@
             </div>
 
             <div class="form-group row">
-            <div class="col-2">
+            <div class="col-4">
                 
                 <label asp-for="MenuItem.SubCategoryId" class="col-form-lable"></label>
             </div>
-            <div class="col-5">
+            <div class="col-8">
               <select asp-for="MenuItem.SubCategoryId" class="form-control" id="ddlSubCategories"
-              asp-items="@(new SelectList(string.Empty,"Id","Name"))">
+              asp-items="@(new SelectList(Model.SubCategoriesList,"Id","Name"))">
                     
                 </select>
                 <span asp-validation-for="MenuItem.SubCategoryId" class="text-danger"></span>
@@ -72,11 +75,11 @@
         </div>
 
          <div class="form-group row">
-            <div class="col-2">
+            <div class="col-4">
                 
                 <label asp-for="MenuItem.Spicyness" class="col-form-lable"></label>
             </div>
-            <div class="col-5">
+            <div class="col-8">
               <select asp-for="MenuItem.Spicyness" class="form-control" id="ddlCategories"
               asp-items="@Html.GetEnumSelectList<MenuItem.Espicy>()">
                     <option value="">select Spicyness .....</option>
@@ -86,9 +89,14 @@
         </div>
        
         <div class="form-group row">
-            <div class="col-5 offset-2">
-                <partial name="_CreateAndBackPartial" />
+            <div class="col-8 offset-4">
+                <partial name="_UpdateAndBackPartial" />
             </div>
+        </div>
+        </div>
+
+        <div class="col-3 offset-1">
+            <img src="@Model.MenuItem.Image" width="100" class="img-thumbnail"  style="height:200px;width:200px"/>
         </div>
     </div>
 </form>
@@ -115,9 +123,7 @@
     }
             });
         }
- $(document).ready(function(){
-     updateSubCategoriesList();
- });
+ 
  $('#ddlCategories').on("change",function(){
   updateSubCategoriesList();
  });
