@@ -124,5 +124,24 @@ namespace MyRestaurant.Areas.Admin.Controllers
             return View(MenuItemVM);
         }
 
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+                return NotFound();
+            var menuitem = _context.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).FirstOrDefault(x => x.Id == id);
+            if (menuitem == null)
+                return NotFound();
+            MenuItemVM.MenuItem = menuitem;
+            MenuItemVM.SubCategoriesList = await _context.SubCategories.Where(m => m.CategoryId == MenuItemVM.MenuItem.CategoryId).ToListAsync();
+            return View(MenuItemVM);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Delete()
+        {
+            _context.MenuItems.Remove(MenuItemVM.MenuItem);
+            await _context.SaveChangesAsync();
+            _toastNotification.AddWarningToastMessage("Menu item Deleted");
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

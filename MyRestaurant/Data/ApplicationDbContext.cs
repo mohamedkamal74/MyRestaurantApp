@@ -16,5 +16,6 @@ namespace MyRestaurant.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<SubCategory> SubCategories { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
+        public DbSet<Copoun> Copouns { get; set; }
     }
 }
