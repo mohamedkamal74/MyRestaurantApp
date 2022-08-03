@@ -36,6 +36,9 @@
                     <th>
 
                     </th>
+                    <th>
+
+                    </th>
                 </tr>
                 @foreach (var item in Model)
                {
@@ -51,6 +54,9 @@
                       </td>
                       <td>
                           @Html.DisplayFor(m=>item.SubCategory.Name)
+                      </td>
+                      <td>
+                          <img src="@item.Image" style="height:70px;width:60px" alt="@item.Name"/>
                       </td>
                       <td style="width:150px">
                          <partial name="_OperationButtonsPartial" model="@item.Id"/>
