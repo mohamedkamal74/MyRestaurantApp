@@ -91,7 +91,7 @@ namespace MyRestaurant.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                string imagepath = @"\Images\Default.png.png";
+               
                 var files = HttpContext.Request.Form.Files;
                 if (files.Count() > 0)
                 {
@@ -99,9 +99,10 @@ namespace MyRestaurant.Areas.Admin.Controllers
                     string imagename = DateTime.Now.ToFileTime().ToString() + Path.GetExtension(files[0].FileName);
                     FileStream fileStream = new FileStream(Path.Combine(webrootpath, "Images", imagename), FileMode.Create);
                     await files[0].CopyToAsync(fileStream);
-                    imagepath = @"\Images\" + imagename;
+                   string  imagepath = @"\Images\" + imagename;
+                    MenuItemVM.MenuItem.Image = imagepath;
                 }
-                MenuItemVM.MenuItem.Image = imagepath;
+               
                 _context.MenuItems.Update(MenuItemVM.MenuItem);
                 await _context.SaveChangesAsync();
                 _toastNotification.AddInfoToastMessage("menu Item Updated Succesfully");
@@ -110,5 +111,18 @@ namespace MyRestaurant.Areas.Admin.Controllers
             }
             return View(MenuItemVM);
         }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+            var menuitem = _context.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).FirstOrDefault(x => x.Id == id);
+            if (menuitem == null)
+                return NotFound();
+            MenuItemVM.MenuItem = menuitem;
+            MenuItemVM.SubCategoriesList = await _context.SubCategories.Where(m => m.CategoryId == MenuItemVM.MenuItem.CategoryId).ToListAsync();
+            return View(MenuItemVM);
+        }
+
     }
 }
