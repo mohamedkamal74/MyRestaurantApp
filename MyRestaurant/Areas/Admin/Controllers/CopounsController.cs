@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyRestaurant.Data;
+using MyRestaurant.Models;
 using NToastNotify;
 using System.Threading.Tasks;
 
@@ -20,6 +21,11 @@ namespace MyRestaurant.Areas.Admin.Controllers
         public async Task< IActionResult> Index()
         {
             return View(await _context.Copouns.ToListAsync());
+        }
+
+        public  IActionResult Create()
+        {
+            return View();
         }
     }
 }
