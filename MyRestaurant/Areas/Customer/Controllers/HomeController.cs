@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MyRestaurant.Data;
 using MyRestaurant.Models;
+using MyRestaurant.ViewModels;
+using NToastNotify;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,27 +16,27 @@ namespace MyRestaurant.Controllers
     [Area("Customer")]
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
+        private readonly IToastNotification _toastNotification;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext context, IToastNotification toastNotification)
         {
-            _logger = logger;
+            _context = context;
+            _toastNotification = toastNotification;
+        }
+       
+        public async Task< IActionResult> Index()
+        {
+            HomeViewModel homeViewModel = new HomeViewModel()
+
+            {
+                Categories = await _context.Categories.ToListAsync(),
+                Copouns = await _context.Copouns.ToListAsync(),
+                MenuItems=await _context.MenuItems.Include(m=>m.Category).Include(m=>m.SubCategory).ToListAsync()
+            };
+            return View(homeViewModel);
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+       
     }
 }
