@@ -80,5 +80,40 @@ namespace MyRestaurant.Areas.Admin.Controllers
             }
             return View(model);
         }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+            var copoun = await _context.Copouns.FindAsync(id);
+            if (copoun == null)
+                return NotFound();
+            return View(copoun);
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+                return NotFound();
+            var copoun = await _context.Copouns.FindAsync(id);
+            if (copoun == null)
+                return NotFound();
+            return View(copoun);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Copoun model)
+        {
+            if (model !=null)
+            {
+                _context.Copouns.Remove(model);
+                await _context.SaveChangesAsync();
+                _toastNotification.AddWarningToastMessage("Copoun Deleted Succesfully");
+                return RedirectToAction(nameof(Index));
+
+            }
+
+            return View(model);
+        }
     }
 }

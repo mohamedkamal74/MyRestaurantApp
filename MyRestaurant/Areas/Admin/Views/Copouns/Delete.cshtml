@@ -1,0 +1,95 @@
+﻿@model Copoun
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<br />
+<h2 class="alert alert-danger"> Are you want to Delete this copoun  Copoun ? @Model.Name</h2>
+<br />
+<form asp-action="Delete" method="post">
+    <div class="whiteBackGround border row">
+        <div class=col-8>
+        <input type="hidden" asp-for=Id />
+        <input type="hidden" asp-for=Picture />
+        <div asp-validation-summary=ModelOnly class="text-danger"></div>
+
+        <div class="form-group row">
+            <div class="col-4">
+                <label asp-for=Name class="col-form-lable"></label>
+            </div>
+            <div class="col-8">
+                <input asp-for=Name class="form-control" readonly />
+                <span asp-validation-for=Name class="text-danger"></span>
+            </div>
+        </div>
+         <div class="form-group row">
+            <div class="col-4">
+                <label asp-for=Picture class="col-form-lable"></label>
+            </div>
+            <div class="col-8">
+                <input asp-for=Picture class="form-control"disabled readonly type="file" multiple/>
+              
+            </div>
+        </div>
+         <div class="form-group row">
+            <div class="col-4">
+                <label asp-for=CopounType class="col-form-lable"></label>
+            </div>
+            <div class="col-8">
+                <select asp-for=CopounType class="form-control" disabled
+                asp-items="@Html.GetEnumSelectList<Copoun.ECopounType>()">
+
+                </select>
+                <span asp-validation-for=CopounType class="text-danger"></span>
+            </div>
+        </div>
+         <div class="form-group row">
+            <div class="col-4">
+                <label asp-for=Discount class="col-form-lable"></label>
+            </div>
+            <div class="col-8">
+                <input asp-for=Discount class="form-control" readonly />
+                <span asp-validation-for=Discount class="text-danger"></span>
+            </div>
+        </div>
+         <div class="form-group row">
+            <div class="col-4">
+                <label asp-for=MinimumAmount class="col-form-lable"></label>
+            </div>
+            <div class="col-8">
+                <input asp-for=MinimumAmount class="form-control" readonly/>
+                <span asp-validation-for=MinimumAmount class="text-danger"></span>
+            </div>
+        </div>
+         <div class="form-group row">
+            <div class="col-4">
+                <label asp-for=IsActive class="col-form-lable"></label>
+            </div>
+            <div class="col-8">
+                <input asp-for=IsActive class="form-control" readonly disabled/>
+                <span asp-validation-for=IsActive class="text-danger"></span>
+            </div>
+        </div>
+
+
+        <div class="form-group row">
+            <div class="col-8 offset-4">
+                <partial name="_DeleteAndBackPartial"  />
+            </div>
+        </div>
+        </div>
+        @if(Model.Picture != null)
+        {
+           <div class="col-3 offset-1">
+            <img src="@("data:image/*;base64,"+Convert.ToBase64String(Model.Picture))" width="100" class="img-thumbnail"  style="height:200px;width:200px"/>
+        </div>  
+        }
+       
+    </div>
+</form>
+
+
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}
