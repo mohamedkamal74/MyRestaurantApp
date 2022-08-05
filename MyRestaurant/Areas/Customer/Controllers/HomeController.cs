@@ -31,7 +31,7 @@ namespace MyRestaurant.Controllers
 
             {
                 Categories = await _context.Categories.ToListAsync(),
-                Copouns = await _context.Copouns.ToListAsync(),
+                Copouns = await _context.Copouns.Where(m=>m.IsActive).ToListAsync(),
                 MenuItems=await _context.MenuItems.Include(m=>m.Category).Include(m=>m.SubCategory).ToListAsync()
             };
             return View(homeViewModel);
