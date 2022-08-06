@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using MyRestaurant.Models;
 
 namespace MyRestaurant.Areas.Identity.Pages.Account
 {
@@ -60,6 +61,20 @@ namespace MyRestaurant.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+            [Required]
+            public string Name { get; set; }
+            [Display(Name = "Street Address")]
+
+            public string StreetAddress { get; set; }
+            [Display(Name = "Postal Code")]
+
+            public string PostalCode { get; set; }
+            public string City { get; set; }
+            public string State { get; set; }
+
+            [Display(Name = "Phone Number")]
+
+            public string PhoneNumber { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -74,7 +89,15 @@ namespace MyRestaurant.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                var user = new ApplicationUser { UserName = Input.Email,
+                    Email = Input.Email ,
+                    PhoneNumber = Input.PhoneNumber,
+                    City = Input.City ,
+                    State = Input.State ,
+                    Name = Input.Name ,
+                    PostalCode=Input.PostalCode ,
+                    StreetAddress=Input.StreetAddress
+                };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
