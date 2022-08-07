@@ -125,7 +125,7 @@ namespace MyRestaurant.Areas.Identity.Pages.Account
                         await _roleManager.CreateAsync(new IdentityRole(SD.CustomerUser));
                     }
 
-                    await _userManager.AddToRoleAsync(user, SD.ManagerUser);
+                    await _userManager.AddToRoleAsync(user, SD.CustomerUser);
 
 
 
