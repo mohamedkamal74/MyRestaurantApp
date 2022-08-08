@@ -125,7 +125,22 @@ namespace MyRestaurant.Areas.Identity.Pages.Account
                         await _roleManager.CreateAsync(new IdentityRole(SD.CustomerUser));
                     }
 
-                    await _userManager.AddToRoleAsync(user, SD.CustomerUser);
+                    string role = HttpContext.Request.Form["RDuserrole"].ToString();
+                    if (string.IsNullOrEmpty(role))
+                    {
+                        await _userManager.AddToRoleAsync(user, SD.CustomerUser);
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return LocalRedirect(returnUrl);
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, role);
+
+                    }
+
+                    return RedirectToAction("Index", "Users",new {area="Admin"});
+
+
 
 
 
@@ -153,8 +168,7 @@ namespace MyRestaurant.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                       
                     }
                 }
                 foreach (var error in result.Errors)
