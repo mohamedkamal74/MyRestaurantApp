@@ -6,56 +6,58 @@
 <br />
 <h2 class="text-info">  Menu Item Details</h2>
 <br />
-<form method="post" asp-action="Edit" enctype="multipart/form-data">
+<form method="post" asp-action="Details">
     <div class="whiteBackGround border row">
 
-        <div class="col-8">
+        <div class="col-md-8">
             <div asp-validation-summary=ModelOnly class="text-danger"></div>
             <input type="hidden" asp-for="MenuItemId" />
 
             <div class="form-group row">
-                <div class="col-4">
-                    <label asp-for="MenuItem.Name" class="col-form-lable"></label>
+                <div class="col-md-4">
+                    <label asp-for="MenuItem.Name" class="text-info font-weight-bold"></label>
                 </div>
-                <div class="col-8">
-                    <input asp-for="MenuItem.Name" class="form-control" disabled/>
+                <div class="col-md-8">
+                    <input asp-for="MenuItem.Name" class="form-control" disabled />
                     <span asp-validation-for="MenuItem.Name" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-4">
-                    <label asp-for="MenuItem.Description" class="col-form-lable"></label>
+                <div class="col-md-4">
+                    <label asp-for="MenuItem.Description" class="text-info font-weight-bold"></label>
                 </div>
-                <div class="col-8">
-                   @Html.Raw(Model.MenuItem.Description)
+                <div class="col-md-8 " >
+                    <div class="border p-2" style="border-radius:5px">
+                    @Html.Raw(Model.MenuItem.Description)
+                    </div>
                     <span asp-validation-for="MenuItem.Description" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-4">
-                    <label asp-for="MenuItem.Price" class="col-form-lable"></label>
+                <div class="col-md-4">
+                    <label asp-for="MenuItem.Price" class="text-info font-weight-bold"></label>
                 </div>
-                <div class="col-8">
-                    <input asp-for="MenuItem.Price" class="form-control" disabled/>
+                <div class="col-md-8">
+                    <input asp-for="MenuItem.Price" class="form-control" disabled />
                     <span asp-validation-for="MenuItem.Price" class="text-danger"></span>
                 </div>
             </div>
 
             <div class="form-group row">
-                <div class="col-4">
-                    <label asp-for="MenuItem.CategoryId" class="col-form-lable"></label>
+                <div class="col-md-4">
+                    <label asp-for="MenuItem.CategoryId" class="text-info font-weight-bold"></label>
                 </div>
-                <div class="col-8">
-                    <input asp-for="MenuItem.Category.Name" class="form-control" disabled/>
+                <div class="col-md-8">
+                    <input asp-for="MenuItem.Category.Name" class="form-control" disabled />
                 </div>
             </div>
 
             <div class="form-group row">
-                <div class="col-4">
+                <div class="col-md-4">
 
-                    <label asp-for="MenuItem.SubCategoryId" class="col-form-lable"></label>
+                    <label asp-for="MenuItem.SubCategoryId" class="text-info font-weight-bold"></label>
                 </div>
-                <div class="col-8">
+                <div class="col-md-8">
 
                     <input asp-for="MenuItem.SubCategory.Name" class="form-control" disabled />
 
@@ -63,11 +65,11 @@
             </div>
 
             <div class="form-group row">
-                <div class="col-4">
+                <div class="col-md-4">
 
-                    <label asp-for="MenuItem.Spicyness" class="col-form-lable"></label>
+                    <label asp-for="MenuItem.Spicyness" class="text-info font-weight-bold"></label>
                 </div>
-                <div class="col-8">
+                <div class="col-md-8">
                     <select asp-for="MenuItem.Spicyness" class="form-control" id="ddlCategories" disabled
                             asp-items="@Html.GetEnumSelectList<MenuItem.Espicy>()">
                         <option value="">select Spicyness .....</option>
@@ -76,25 +78,33 @@
                 </div>
             </div>
 
-            
+
             <div class="form-group row">
-                <div class="col-4">
-                    <label asp-for="Count" class="col-form-lable"></label>
+                <div class="col-md-4">
+                    <label asp-for="Count" class="text-info font-weight-bold"></label>
                 </div>
-                <div class="col-8">
-                    <input asp-for="Count" class="form-control" disabled/>
+                <div class="col-md-8">
+                    <input asp-for="Count" class="form-control" />
                     <span asp-validation-for=Count class="text-danger"></span>
                 </div>
             </div>
 
             <div class="form-group row">
-                <div class="col-8 offset-4">
-                    <partial name="_UpdateAndBackPartial" />
+                <div class="col-4 ">
                 </div>
+                <div class="col-4 ">
+                    <input type="submit" asp-action="AddToCart" class="btn btn-success form-control" value="Add To Cart" />
+
+                </div>
+                <div class="col-4 ">
+                    <a asp-action="Index" class="btn btn-dark form-control">Back To List</a>
+
+                </div>
+
             </div>
         </div>
 
-        <div class="col-3 offset-1">
+        <div class="col-md-3 col-sm-12 offset-1">
             <img src="@Model.MenuItem.Image" width="100" class="img-thumbnail" style="height:200px;width:200px" />
         </div>
     </div>

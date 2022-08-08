@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyRestaurant.Data;
 using MyRestaurant.Models;
+using MyRestaurant.Utility;
 using MyRestaurant.ViewModels;
 using NToastNotify;
 using System;
@@ -36,7 +38,7 @@ namespace MyRestaurant.Controllers
             };
             return View(homeViewModel);
         }
-
+        [Authorize(Roles =(SD.ManagerUser))]
         public async Task<IActionResult>Details(int id)
         {
             var menuitem= await _context.MenuItems.Include(m=>m.Category).Include(m=>m.SubCategory).FirstOrDefaultAsync(m=>m.Id == id);
