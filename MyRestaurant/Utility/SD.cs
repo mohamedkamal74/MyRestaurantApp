@@ -6,5 +6,8 @@
         public const string KitchenUser = "Kitchen";
         public const string FrontDeskUser = "Front Desk";
         public const string CustomerUser = "Customer";
+
+
+        public const string ShoppingCartCount = "ShoppingCartCount";
     }
 }

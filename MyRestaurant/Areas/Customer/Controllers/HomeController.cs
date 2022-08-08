@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MyRestaurant.Controllers
@@ -38,7 +40,7 @@ namespace MyRestaurant.Controllers
             };
             return View(homeViewModel);
         }
-        [Authorize(Roles =(SD.ManagerUser))]
+        [Authorize]
         public async Task<IActionResult>Details(int id)
         {
             var menuitem= await _context.MenuItems.Include(m=>m.Category).Include(m=>m.SubCategory).FirstOrDefaultAsync(m=>m.Id == id);
@@ -49,6 +51,38 @@ namespace MyRestaurant.Controllers
                 MenuItemId=menuitem.Id
             };
             return View(shoppingcart);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult>Details(ShoppingCart shoppingCart)
+        {
+            if (ModelState.IsValid)
+            {
+                var claimIdentity = (ClaimsIdentity)User.Identity;
+                var claim = claimIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                shoppingCart.ApplicationUserId = claim.Value;
+
+                var shoppingcartitem = await _context.ShoppingCarts.Where(m => m.ApplicationUserId == shoppingCart.ApplicationUserId
+                && m.MenuItemId == shoppingCart.MenuItemId).FirstOrDefaultAsync();
+
+                if (shoppingcartitem == null)
+                {
+                    _context.ShoppingCarts.Add(shoppingcartitem);
+                }
+                else
+                {
+                    shoppingcartitem.Count += shoppingCart.Count;
+                }
+                await _context.SaveChangesAsync();
+                var count = _context.ShoppingCarts.Where(m => m.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count;
+
+                HttpContext.Session.SetInt32(SD.ShoppingCartCount, count);
+                _toastNotification.AddSuccessToastMessage("product added to your cart");
+                return RedirectToAction(nameof(Index));
+
+            }
+
         }
 
        
