@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MyRestaurant.Data;
 using MyRestaurant.Utility;
 using NToastNotify;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -28,6 +29,26 @@ namespace MyRestaurant.Areas.Admin.Controllers
             var claim = claimsidentity.FindFirst(ClaimTypes.NameIdentifier);
             string userId = claim.Value;
             return View(await _context.ApplicationUsers.Where(m=>m.Id!=userId).ToListAsync());
+        }
+
+        public async Task<IActionResult>LockUnLock(string? id)
+        {
+            if (id == null)
+                return NotFound();
+            var user = await _context.ApplicationUsers.FindAsync(id);
+            if (user == null)
+                return NotFound();
+            if (user.LockoutEnd == null || user.LockoutEnd < DateTime.Now)
+            {
+                user.LockoutEnd = DateTime.Now.AddYears(100);
+            }
+            else
+            {
+                user.LockoutEnd = DateTime.Now;
+
+            }
+           await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }
