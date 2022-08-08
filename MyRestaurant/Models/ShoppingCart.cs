@@ -3,8 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyRestaurant.Models
 {
+
     public class ShoppingCart
     {
+        public ShoppingCart()
+        {
+            Count = 1;
+        }
         [Key]
         public int Id { get; set; }
         public string ApplicationUserId { get; set; }

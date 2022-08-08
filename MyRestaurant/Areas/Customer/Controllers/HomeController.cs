@@ -37,6 +37,18 @@ namespace MyRestaurant.Controllers
             return View(homeViewModel);
         }
 
+        public async Task<IActionResult>Details(int id)
+        {
+            var menuitem= await _context.MenuItems.Include(m=>m.Category).Include(m=>m.SubCategory).FirstOrDefaultAsync(m=>m.Id == id);
+
+            var shoppingcart = new ShoppingCart
+            {
+                MenuItem=menuitem,
+                MenuItemId=menuitem.Id
+            };
+            return View(shoppingcart);
+        }
+
        
     }
 }
