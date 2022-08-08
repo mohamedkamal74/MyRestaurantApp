@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MyRestaurant.Data;
 using MyRestaurant.Models;
+using MyRestaurant.Utility;
 using MyRestaurant.ViewModels;
 using NToastNotify;
 using System.Collections.Generic;
@@ -11,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace MyRestaurant.Areas.Admin.Controllers
 {
+    [Authorize(Roles = (SD.ManagerUser))]
+
     [Area("Admin")]
     public class SubCategoriesController : Controller
     {

@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyRestaurant.Data;
 using MyRestaurant.Models;
+using MyRestaurant.Utility;
 using MyRestaurant.ViewModels;
 using NToastNotify;
 using System;
@@ -12,6 +14,8 @@ using System.Threading.Tasks;
 
 namespace MyRestaurant.Areas.Admin.Controllers
 {
+    [Authorize(Roles = (SD.ManagerUser))]
+
     [Area("Admin")]
     public class MenuItemsController : Controller
     {
