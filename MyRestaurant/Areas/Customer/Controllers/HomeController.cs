@@ -41,9 +41,9 @@ namespace MyRestaurant.Controllers
             return View(homeViewModel);
         }
         [Authorize]
-        public async Task<IActionResult>Details(int id)
+        public async Task<IActionResult>Details(int itemid)
         {
-            var menuitem= await _context.MenuItems.Include(m=>m.Category).Include(m=>m.SubCategory).FirstOrDefaultAsync(m=>m.Id == id);
+            var menuitem= await _context.MenuItems.Include(m=>m.Category).Include(m=>m.SubCategory).FirstOrDefaultAsync(m=>m.Id == itemid);
 
             var shoppingcart = new ShoppingCart
             {
@@ -68,7 +68,7 @@ namespace MyRestaurant.Controllers
 
                 if (shoppingcartitem == null)
                 {
-                    _context.ShoppingCarts.Add(shoppingcartitem);
+                    _context.ShoppingCarts.Add(shoppingCart);
                 }
                 else
                 {
@@ -77,11 +77,19 @@ namespace MyRestaurant.Controllers
                 await _context.SaveChangesAsync();
                 var count = _context.ShoppingCarts.Where(m => m.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count;
 
-                HttpContext.Session.SetInt32(SD.ShoppingCartCount, count);
+              //  HttpContext.Session.SetInt32(SD.ShoppingCartCount, count);
                 _toastNotification.AddSuccessToastMessage("product added to your cart");
                 return RedirectToAction(nameof(Index));
 
             }
+            var menuitem = await _context.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).FirstOrDefaultAsync(m => m.Id == shoppingCart.MenuItemId);
+
+            var shoppingcart = new ShoppingCart
+            {
+                MenuItem = menuitem,
+                MenuItemId = menuitem.Id
+            };
+            return View(shoppingcart);
 
         }
 
