@@ -1,0 +1,51 @@
+﻿@model OrderDetailsCartViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+@if (Model.ShoppingCartsList.Any())
+{
+    <div class="whiteBackGround ">
+        <div class="container">
+            <div class="card">
+                <div class="card-header bg-dark text-light ml-0 row container ">
+                    <div class="col-6">
+                        <i class="fas fa-shopping-cart"></i> &nbsp; Shopping Cart
+
+                    </div>
+                    <div class="col-6 text-right">
+                        <a asp-action="Index" asp-controller="Home" asp-area="Customer" class="btn btn-outline-primary">Continue Shopping</a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    @foreach (var item in Model.ShoppingCartsList)
+                   {
+                       <div class="row">
+                           <div class="d-none d-lg-block col-lg-2 text-center py-1">
+                               <img src="@item.MenuItem.Image" class="rounded" width="120" height="80"/>
+                           </div>
+                       </div>
+                       <div class="col-12 text-sm-center col-lg-5 text-lg-left">
+                           <h4 class="text-info"><strong>@item.MenuItem.Name</strong></h4>
+                           <h4 ><strong>@item.MenuItem.Description</strong></h4>
+                       </div>
+
+
+
+
+                       <hr />
+                   }
+                </div>
+            </div>
+
+        </div>
+    </div>
+}
+else
+{
+    <div class="whiteBackGround text-danger">
+        No Item Added to shopping cart.....
+    </div>
+}
+

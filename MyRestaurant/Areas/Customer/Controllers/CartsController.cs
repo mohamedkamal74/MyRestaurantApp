@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyRestaurant.Data;
 using MyRestaurant.Models;
 using MyRestaurant.ViewModels;
@@ -7,7 +8,8 @@ using System.Security.Claims;
 
 namespace MyRestaurant.Areas.Customer.Controllers
 {
-
+    [Area("Customer")]
+    [Authorize]
     public class CartsController : Controller
     {
         private readonly ApplicationDbContext _context;
