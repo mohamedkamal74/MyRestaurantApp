@@ -31,6 +31,15 @@ namespace MyRestaurant.Controllers
        
         public async Task< IActionResult> Index()
         {
+            var claimsidentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsidentity.FindFirst(ClaimTypes.NameIdentifier);
+            if (claim != null)
+            {
+                List<ShoppingCart> shoppingCarts = await _context.ShoppingCarts.Where(m => m.ApplicationUserId == claim.Value).ToListAsync();
+                HttpContext.Session.SetInt32(SD.ShoppingCartCount, shoppingCarts.Count);
+
+            }
+
             HomeViewModel homeViewModel = new HomeViewModel()
 
             {
@@ -77,7 +86,7 @@ namespace MyRestaurant.Controllers
                 await _context.SaveChangesAsync();
                 var count = _context.ShoppingCarts.Where(m => m.ApplicationUserId == shoppingCart.ApplicationUserId).ToList().Count;
 
-              //  HttpContext.Session.SetInt32(SD.ShoppingCartCount, count);
+               HttpContext.Session.SetInt32(SD.ShoppingCartCount, count);
                 _toastNotification.AddSuccessToastMessage("product added to your cart");
                 return RedirectToAction(nameof(Index));
 
