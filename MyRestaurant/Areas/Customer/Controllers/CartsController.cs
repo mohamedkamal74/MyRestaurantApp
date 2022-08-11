@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MyRestaurant.Data;
 using MyRestaurant.Models;
 using MyRestaurant.ViewModels;
+using System;
 using System.Linq;
 using System.Security.Claims;
 
@@ -41,6 +42,8 @@ namespace MyRestaurant.Areas.Customer.Controllers
             {
                 item.MenuItem = _context.MenuItems.FirstOrDefault(m => m.Id == item.MenuItemId);
                 OrderDetailsCartVM.OrderHeader.OrderTotal += item.MenuItem.Price * item.Count;
+                OrderDetailsCartVM.OrderHeader.OrderTotal=Math.Round(OrderDetailsCartVM.OrderHeader.OrderTotal,2);
+
             }
 
             OrderDetailsCartVM.OrderHeader.OrderTotalOriginal = OrderDetailsCartVM.OrderHeader.OrderTotal;
