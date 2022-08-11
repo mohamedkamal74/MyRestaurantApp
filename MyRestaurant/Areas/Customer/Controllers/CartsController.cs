@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyRestaurant.Data;
 using MyRestaurant.Models;
+using MyRestaurant.Utility;
 using MyRestaurant.ViewModels;
 using System;
 using System.Linq;
@@ -48,7 +50,24 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
             OrderDetailsCartVM.OrderHeader.OrderTotalOriginal = OrderDetailsCartVM.OrderHeader.OrderTotal;
 
+            if (HttpContext.Session.GetString(SD.ssCopounCode) != null)
+            {
+                OrderDetailsCartVM.OrderHeader.CopounCode = HttpContext.Session.GetString(SD.ssCopounCode);
+
+                var copounfromDB = _context.Copouns.FirstOrDefault(m => m.Name.ToLower() == OrderDetailsCartVM.OrderHeader.CopounCode.ToLower());
+            }
+
             return View(OrderDetailsCartVM);
+        }
+
+        public IActionResult ApplyCopoun()
+        {
+            if(OrderDetailsCartVM.OrderHeader.CopounCode == null)
+            {
+                OrderDetailsCartVM.OrderHeader.CopounCode = "";
+            }
+            HttpContext.Session.SetString(SD.ssCopounCode, OrderDetailsCartVM.OrderHeader.CopounCode);
+            return RedirectToAction(nameof(Index));
         }
         
     }
