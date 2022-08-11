@@ -8,6 +8,7 @@ using MyRestaurant.ViewModels;
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace MyRestaurant.Areas.Customer.Controllers
 {
@@ -55,6 +56,8 @@ namespace MyRestaurant.Areas.Customer.Controllers
                 OrderDetailsCartVM.OrderHeader.CopounCode = HttpContext.Session.GetString(SD.ssCopounCode);
 
                 var copounfromDB = _context.Copouns.FirstOrDefault(m => m.Name.ToLower() == OrderDetailsCartVM.OrderHeader.CopounCode.ToLower());
+
+                OrderDetailsCartVM.OrderHeader.OrderTotal = SD.DiscountPrice(copounfromDB, OrderDetailsCartVM.OrderHeader.OrderTotalOriginal);
             }
 
             return View(OrderDetailsCartVM);
@@ -69,6 +72,22 @@ namespace MyRestaurant.Areas.Customer.Controllers
             HttpContext.Session.SetString(SD.ssCopounCode, OrderDetailsCartVM.OrderHeader.CopounCode);
             return RedirectToAction(nameof(Index));
         }
-        
+
+        public IActionResult RemoveCopoun()
+        {
+            
+            HttpContext.Session.SetString(SD.ssCopounCode, String.Empty);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Plus(int cardId)
+        {
+            var shoppingcart = await _context.ShoppingCarts.FindAsync(cardId);
+            shoppingcart.Count += 1;
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
+        }
+
     }
 }

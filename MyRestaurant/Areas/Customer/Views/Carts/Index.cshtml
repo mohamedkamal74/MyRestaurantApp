@@ -39,7 +39,7 @@
 
                                     <div class="col-6 col-sm-4 col-lg-6">
                                         <div class="float-right mx-1">
-                                            <button type="submit" class="btn btn-primary" asp-action="Add" asp-route-cartId="@item.Id">
+                                            <button type="submit" class="btn btn-primary" asp-action="Plus" asp-route-cardId="@item.Id">
                                                 <i class="fas fa-plus"></i>
                                             </button>
                                         </div>
@@ -48,7 +48,7 @@
 
                                         <div class="float-right mx-1">
 
-                                            <button type="submit" class="btn btn-danger" asp-action="Minus" asp-route-cartId="@item.Id">
+                                            <button type="submit" class="btn btn-danger" asp-action="Minus" asp-route-cardId="@item.Id">
                                                 <i class="fas fa-minus"></i>
                                             </button>
                                         </div>
@@ -82,7 +82,7 @@
                                             Apply
                                         </button>
 
-                                        <button type="submit" id="removeCopoun" asp-action="RemoveCopoun" class="btn btn-sm form-control btn-outline-danger d-none">
+                                        <button type="submit" id="removeCopoun" asp-action="RemoveCopoun" class="btn btn-sm form-control btn-outline-danger" style="display:none">
                                             Remove
                                         </button>
                                     </div>
@@ -132,21 +132,18 @@
 
            $(function(){
 
-               var txtCopounCode=document.getElementById('txtCopounCode').nodeValue;
-               if(txtCopounCode.length>0){
+               var txtCopounCode=document.getElementById("txtCopounCode").value;
+               if(txtCopounCode.length > 0){
 
-                   document.getElementById('applyCopoun').style.display="none";
-                   document.getElementById('removeCopoun').style.display="";
+                   document.getElementById("applyCopoun").style.display= 'none';
+                   document.getElementById("removeCopoun").style.display= '';
                }
                else{
-                   document.getElementById('applyCopoun').style.display="";
-                   document.getElementById('removeCopoun').style.display="none";
+                   document.getElementById("applyCopoun").style.display= '';
+                   document.getElementById("removeCopoun").style.display= 'none';
 
                }
 
-
-
-
-           });
+           })
 </script>
 }
