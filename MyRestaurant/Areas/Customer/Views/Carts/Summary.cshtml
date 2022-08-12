@@ -55,7 +55,7 @@
                                        Date :
                                    </div>
                                    <div class="col-9">
-                               <input id="datePicker" type="date" value=""  asp-for="OrderHeader.PickUpDate" class="form-control"/>
+                               <input id="datepicker" type="text" value=""  asp-for="OrderHeader.PickUpDate" class="form-control"/>
                                    </div>
                                   </div>
 
@@ -64,7 +64,7 @@
                                        Time :
                                    </div>
                                    <div class="col-9">
-                               <input id="timePicker" type="time" value="" asp-for="OrderHeader.PickUpTime" class="form-control"/>
+                               <input id="timepicker" type="text" value="" asp-for="OrderHeader.PickUpTime" class="form-control"/>
                                    </div>
                                   </div>
 
@@ -108,7 +108,27 @@
                                              </li>
                                              <hr />
                                          }
-                                      </ul>
+                                        @if (Model.OrderHeader.CopounCode != null)
+                                        {
+                                            <li class="list-group-item d-flex justify-content-between">
+                                                <div class="text-success">
+                                                    <h6 class="my-0">Promo Code</h6>
+                                                    <small class="text-muted">
+                                                        @Model.OrderHeader.CopounCode
+                                                    </small>
+                                                </div>
+                                                
+                                                <span class="text-muted">
+                                                    _ $ @(Math.Round(Model.OrderHeader.OrderTotalOriginal-Model.OrderHeader.OrderTotal,2))
+                                                </span>
+                                            </li>
+                                            <hr />
+                                        }
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <small class="text-danger">Total (USD)</small>
+                                            <span class="text-muted">$ @(Math.Round(Model.OrderHeader.OrderTotal,2))</span>
+                                        </li>
+                                    </ul>
                              
                               </div>
                           </div>
@@ -139,22 +159,18 @@
 
 
 @section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.js"></script>
+     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
 <script>
 
-    $(function(){
+    $( function() {
+    $( "#datepicker" ).datepicker();
+    $( "#timepicker" ).timepicker({'minTime':'11:00 AM','maxTime':'9:00 PM',step:'30'});
 
-        var txtCopounCode=document.getElementById("txtCopounCode").value;
-        if(txtCopounCode.length > 0){
 
-            document.getElementById("applyCopoun").style.display= 'none';
-            document.getElementById("removeCopoun").style.display= '';
-        }
-        else{
-            document.getElementById("applyCopoun").style.display= '';
-            document.getElementById("removeCopoun").style.display= 'none';
-
-        }
-
-    })
+  } );
+    
 </script>
 }
