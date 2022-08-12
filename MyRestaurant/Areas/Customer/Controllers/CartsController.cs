@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MyRestaurant.Data;
 using MyRestaurant.Models;
 using MyRestaurant.Utility;
@@ -20,7 +21,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
         public CartsController(ApplicationDbContext context)
         {
-           _context = context;
+            _context = context;
         }
         [BindProperty]
         public OrderDetailsCartViewModel OrderDetailsCartVM { get; set; }
@@ -28,7 +29,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
         {
             OrderDetailsCartVM = new OrderDetailsCartViewModel()
             {
-                OrderHeader=new OrderHeader()
+                OrderHeader = new OrderHeader()
             };
             OrderDetailsCartVM.OrderHeader.OrderTotal = 0;
 
@@ -36,7 +37,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
             var claim = claimsidentity.FindFirst(ClaimTypes.NameIdentifier);
 
             var shoppingcarts = _context.ShoppingCarts.Where(m => m.ApplicationUserId == claim.Value);
-            if(shoppingcarts != null)
+            if (shoppingcarts != null)
             {
                 OrderDetailsCartVM.ShoppingCartsList = shoppingcarts.ToList();
             }
@@ -45,7 +46,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
             {
                 item.MenuItem = _context.MenuItems.FirstOrDefault(m => m.Id == item.MenuItemId);
                 OrderDetailsCartVM.OrderHeader.OrderTotal += item.MenuItem.Price * item.Count;
-                OrderDetailsCartVM.OrderHeader.OrderTotal=Math.Round(OrderDetailsCartVM.OrderHeader.OrderTotal,2);
+                OrderDetailsCartVM.OrderHeader.OrderTotal = Math.Round(OrderDetailsCartVM.OrderHeader.OrderTotal, 2);
 
             }
 
@@ -63,9 +64,54 @@ namespace MyRestaurant.Areas.Customer.Controllers
             return View(OrderDetailsCartVM);
         }
 
+
+        public IActionResult Summary()
+        {
+            OrderDetailsCartVM = new OrderDetailsCartViewModel()
+            {
+                OrderHeader = new OrderHeader()
+            };
+            OrderDetailsCartVM.OrderHeader.OrderTotal = 0;
+
+            var claimsidentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsidentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            var AppUser = _context.ApplicationUsers.Find(claim.Value);
+
+            OrderDetailsCartVM.OrderHeader.PickUpName = AppUser.Name;
+            OrderDetailsCartVM.OrderHeader.PhoneNumber = AppUser.PhoneNumber;
+            OrderDetailsCartVM.OrderHeader.PickUpDate = DateTime.Now;
+
+            var shoppingcarts = _context.ShoppingCarts.Where(m => m.ApplicationUserId == claim.Value);
+            if (shoppingcarts != null)
+            {
+                OrderDetailsCartVM.ShoppingCartsList = shoppingcarts.ToList();
+            }
+
+            foreach (var item in OrderDetailsCartVM.ShoppingCartsList)
+            {
+                item.MenuItem = _context.MenuItems.FirstOrDefault(m => m.Id == item.MenuItemId);
+                OrderDetailsCartVM.OrderHeader.OrderTotal += item.MenuItem.Price * item.Count;
+                OrderDetailsCartVM.OrderHeader.OrderTotal = Math.Round(OrderDetailsCartVM.OrderHeader.OrderTotal, 2);
+
+            }
+
+            OrderDetailsCartVM.OrderHeader.OrderTotalOriginal = OrderDetailsCartVM.OrderHeader.OrderTotal;
+
+            if (HttpContext.Session.GetString(SD.ssCopounCode) != null)
+            {
+                OrderDetailsCartVM.OrderHeader.CopounCode = HttpContext.Session.GetString(SD.ssCopounCode);
+
+                var copounfromDB = _context.Copouns.FirstOrDefault(m => m.Name.ToLower() == OrderDetailsCartVM.OrderHeader.CopounCode.ToLower());
+
+                OrderDetailsCartVM.OrderHeader.OrderTotal = SD.DiscountPrice(copounfromDB, OrderDetailsCartVM.OrderHeader.OrderTotalOriginal);
+            }
+
+            return View(OrderDetailsCartVM);
+        }
         public IActionResult ApplyCopoun()
         {
-            if(OrderDetailsCartVM.OrderHeader.CopounCode == null)
+            if (OrderDetailsCartVM.OrderHeader.CopounCode == null)
             {
                 OrderDetailsCartVM.OrderHeader.CopounCode = "";
             }
@@ -75,7 +121,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
         public IActionResult RemoveCopoun()
         {
-            
+
             HttpContext.Session.SetString(SD.ssCopounCode, String.Empty);
             return RedirectToAction(nameof(Index));
         }
@@ -85,6 +131,33 @@ namespace MyRestaurant.Areas.Customer.Controllers
             var shoppingcart = await _context.ShoppingCarts.FindAsync(cardId);
             shoppingcart.Count += 1;
             await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
+        }
+
+        public async Task<IActionResult> Minus(int cardId)
+        {
+            var shoppingcart = await _context.ShoppingCarts.FindAsync(cardId);
+
+            if (shoppingcart.Count > 1)
+            {
+                shoppingcart.Count -= 1;
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+
+        }
+
+        public async Task<IActionResult> Remove(int cardId)
+        {
+            var shoppingcart = await _context.ShoppingCarts.FindAsync(cardId);
+            _context.ShoppingCarts.Remove(shoppingcart);
+            await _context.SaveChangesAsync();
+
+            var count = _context.ShoppingCarts.Where(m => m.ApplicationUserId == shoppingcart.ApplicationUserId).ToList().Count;
+            HttpContext.Session.SetInt32(SD.ShoppingCartCount, count);
+
             return RedirectToAction(nameof(Index));
 
         }
