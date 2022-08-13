@@ -159,18 +159,50 @@
 
 
 @section Scripts{
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.js"></script>
      <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
   <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+
 
 <script>
 
     $( function() {
-    $( "#datepicker" ).datepicker();
+    $( "#datepicker" ).datepicker({minDate :0,maxDate: "+1W"});
     $( "#timepicker" ).timepicker({'minTime':'11:00 AM','maxTime':'9:00 PM',step:'30'});
 
+   function setPickUpTime(){
+       var dateSelected=document.getElementById('datepicker').value;
+       var date=new Date(dateSelected);
+       var toDay=new Date();
+       date.setHours(0,0,0,0);
+       if(date>toDay){
+           selectedTime:"11:00 AM";
+       }else{
+           selectedTime:getTimeFromCurrentDate();
+       }
+       $('#timepicker').timepicker('option','minTime',selctedTime);
+   }
 
-  } );
+   function getTimeFromCurrentDate(){
+       var curDate=new Date();
+       var minTime="";
+       if(curDate.getHours()<11){
+           minTime:"12:00 PM";
+       }else{
+           if(curDate.getMinutes()<30){
+               minTime:(curDate.getHours()+1).toString()+'30 PM'
+           }else{
+               minTime:(curDate.getHours()+2).toString()+'30 PM'
+
+           }
+
+       }
+       return minTime;
+   }
+   $('#datepicker').change(function (){
+    setPickUpTime();
+   });
     
 </script>
 }
