@@ -113,20 +113,20 @@ namespace MyRestaurant.Areas.Customer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Summary")]
-        public async Task< IActionResult> SummaryPost()
+        public async Task<IActionResult> SummaryPost()
         {
-           
+
             var claimsidentity = (ClaimsIdentity)User.Identity;
             var claim = claimsidentity.FindFirst(ClaimTypes.NameIdentifier);
 
-            OrderDetailsCartVM.ShoppingCartsList=await  _context.ShoppingCarts.Where(m => m.ApplicationUserId == claim.Value).ToListAsync();
+            OrderDetailsCartVM.ShoppingCartsList = await _context.ShoppingCarts.Where(m => m.ApplicationUserId == claim.Value).ToListAsync();
 
             OrderDetailsCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
             OrderDetailsCartVM.OrderHeader.OrderDate = DateTime.Now;
             OrderDetailsCartVM.OrderHeader.UserId = claim.Value;
             OrderDetailsCartVM.OrderHeader.Status = SD.PaymentStatusPending;
-            OrderDetailsCartVM.OrderHeader.PickUpTime = Convert.ToDateTime(OrderDetailsCartVM.OrderHeader.PickUpDate.ToShortDateString() + "" +
-               OrderDetailsCartVM.OrderHeader.PickUpTime.ToShortDateString());
+            OrderDetailsCartVM.OrderHeader.PickUpTime = Convert.ToDateTime(OrderDetailsCartVM.OrderHeader.PickUpDate.ToShortDateString() + " " +
+               OrderDetailsCartVM.OrderHeader.PickUpTime.ToShortTimeString());
             OrderDetailsCartVM.OrderHeader.OrderTotalOriginal = 0;
 
             _context.OrderHeaders.Add(OrderDetailsCartVM.OrderHeader);
@@ -139,20 +139,19 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
                 OrderDetails orderDetails = new OrderDetails()
                 {
-                    
-                    MenuItemId=item.MenuItemId,
-                    OrderId=OrderDetailsCartVM.OrderHeader.Id,
-                    Description=item.MenuItem.Description,
-                    Name = item.MenuItem.Name ,
-                    Price=item.MenuItem.Price,
-                    Count=item.Count
+
+                    MenuItemId = item.MenuItemId,
+                    OrderId = OrderDetailsCartVM.OrderHeader.Id,
+                    Description = item.MenuItem.Description,
+                    Name = item.MenuItem.Name,
+                    Price = item.MenuItem.Price,
+                    Count = item.Count
                 };
 
-                OrderDetailsCartVM.OrderHeader.OrderTotal += item.MenuItem.Price * item.Count;
+                OrderDetailsCartVM.OrderHeader.OrderTotal = item.MenuItem.Price * item.Count;
 
                 _context.OrderDetails.Add(orderDetails);
-                await _context.SaveChangesAsync();
-                OrderDetailsCartVM.OrderHeader.OrderTotal = Math.Round(OrderDetailsCartVM.OrderHeader.OrderTotal, 2);
+               
 
             }
 
@@ -161,18 +160,24 @@ namespace MyRestaurant.Areas.Customer.Controllers
             {
                 OrderDetailsCartVM.OrderHeader.CopounCode = HttpContext.Session.GetString(SD.ssCopounCode);
 
-                var copounfromDB = _context.Copouns.FirstOrDefault(m => m.Name.ToLower() == OrderDetailsCartVM.OrderHeader.CopounCode.ToLower());
+                var copounfromDB = _context.Copouns.Where(m => m.Name.ToLower() == OrderDetailsCartVM.OrderHeader.CopounCode.ToLower()).FirstOrDefault();
 
                 OrderDetailsCartVM.OrderHeader.OrderTotal = SD.DiscountPrice(copounfromDB, OrderDetailsCartVM.OrderHeader.OrderTotalOriginal);
             }
             else
             {
-                OrderDetailsCartVM.OrderHeader.OrderTotal = OrderDetailsCartVM.OrderHeader.OrderTotalOriginal;
+                OrderDetailsCartVM.OrderHeader.OrderTotal = Math.Round(OrderDetailsCartVM.OrderHeader.OrderTotalOriginal,2);
             }
 
-            return View(OrderDetailsCartVM);
+            OrderDetailsCartVM.OrderHeader.CopounCodeDiscount = OrderDetailsCartVM.OrderHeader.OrderTotalOriginal - OrderDetailsCartVM.OrderHeader.OrderTotal;
+
+            _context.ShoppingCarts.RemoveRange(OrderDetailsCartVM.ShoppingCartsList);
+            HttpContext.Session.SetInt32(SD.ShoppingCartCount, 0);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index","Home");
         }
-        public  IActionResult ApplyCopoun()
+        public IActionResult ApplyCopoun()
         {
             if (OrderDetailsCartVM.OrderHeader.CopounCode == null)
             {

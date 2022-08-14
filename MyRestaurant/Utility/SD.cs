@@ -45,7 +45,7 @@ namespace MyRestaurant.Utility
                 {
                     if (int.Parse(copoun.CopounType) == (int)Copoun.ECopounType.Dollar)
                     {
-                        return Math.Round(OrderTotalOriginal -copoun.Discount, 2);
+                        return Math.Round(OrderTotalOriginal - copoun.Discount, 2);
 
                     }
                     else
