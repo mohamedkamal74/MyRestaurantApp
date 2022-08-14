@@ -14,6 +14,19 @@ namespace MyRestaurant.Utility
         public const string ShoppingCartCount = "ShoppingCartCount";
         public const string ssCopounCode = "CopounCode";
 
+        public const string StatusSubmited  = "Submited";
+        public const string StatusInProcess = "InProcess";
+        public const string StatusReady     = "Ready";
+        public const string StatusCompleted = "Completed";
+        public const string StatusCancelled = "Cancelled";
+
+        public const string PaymentStatusPending = "Pending";
+        public const string PaymentStatusApproved = "Approved";
+        public const string PaymentStatusRegected = "Regected";
+
+
+
+
 
         public static double DiscountPrice(Copoun copoun,double OrderTotalOriginal)
         {
