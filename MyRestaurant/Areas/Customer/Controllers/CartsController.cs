@@ -109,6 +109,69 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
             return View(OrderDetailsCartVM);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Summary")]
+        public async Task< IActionResult> SummaryPost()
+        {
+           
+            var claimsidentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsidentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            OrderDetailsCartVM.ShoppingCartsList=await  _context.ShoppingCarts.Where(m => m.ApplicationUserId == claim.Value).ToListAsync();
+
+            OrderDetailsCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
+            OrderDetailsCartVM.OrderHeader.OrderDate = DateTime.Now;
+            OrderDetailsCartVM.OrderHeader.UserId = claim.Value;
+            OrderDetailsCartVM.OrderHeader.Status = SD.PaymentStatusPending;
+            OrderDetailsCartVM.OrderHeader.PickUpTime = Convert.ToDateTime(OrderDetailsCartVM.OrderHeader.PickUpDate.ToShortDateString() + "" +
+               OrderDetailsCartVM.OrderHeader.PickUpTime.ToShortDateString());
+            OrderDetailsCartVM.OrderHeader.OrderTotalOriginal = 0;
+
+            _context.OrderHeaders.Add(OrderDetailsCartVM.OrderHeader);
+            await _context.SaveChangesAsync();
+
+
+            foreach (var item in OrderDetailsCartVM.ShoppingCartsList)
+            {
+                item.MenuItem = _context.MenuItems.FirstOrDefault(m => m.Id == item.MenuItemId);
+
+                OrderDetails orderDetails = new OrderDetails()
+                {
+                    
+                    MenuItemId=item.MenuItemId,
+                    OrderId=OrderDetailsCartVM.OrderHeader.Id,
+                    Description=item.MenuItem.Description,
+                    Name = item.MenuItem.Name ,
+                    Price=item.MenuItem.Price,
+                    Count=item.Count
+                };
+
+                OrderDetailsCartVM.OrderHeader.OrderTotal += item.MenuItem.Price * item.Count;
+
+                _context.OrderDetails.Add(orderDetails);
+                await _context.SaveChangesAsync();
+                OrderDetailsCartVM.OrderHeader.OrderTotal = Math.Round(OrderDetailsCartVM.OrderHeader.OrderTotal, 2);
+
+            }
+
+
+            if (HttpContext.Session.GetString(SD.ssCopounCode) != null)
+            {
+                OrderDetailsCartVM.OrderHeader.CopounCode = HttpContext.Session.GetString(SD.ssCopounCode);
+
+                var copounfromDB = _context.Copouns.FirstOrDefault(m => m.Name.ToLower() == OrderDetailsCartVM.OrderHeader.CopounCode.ToLower());
+
+                OrderDetailsCartVM.OrderHeader.OrderTotal = SD.DiscountPrice(copounfromDB, OrderDetailsCartVM.OrderHeader.OrderTotalOriginal);
+            }
+            else
+            {
+                OrderDetailsCartVM.OrderHeader.OrderTotal = OrderDetailsCartVM.OrderHeader.OrderTotalOriginal;
+            }
+
+            return View(OrderDetailsCartVM);
+        }
         public  IActionResult ApplyCopoun()
         {
             if (OrderDetailsCartVM.OrderHeader.CopounCode == null)

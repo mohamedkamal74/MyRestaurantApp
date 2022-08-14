@@ -31,7 +31,7 @@ namespace MyRestaurant.Models
         [Display(Name = "Copoun Code")]
 
         public string CopounCode { get; set; }
-        public string CopounCodeDiscount { get; set; }
+        public double CopounCodeDiscount { get; set; }
         public string Status { get; set; }
         public string PaymentStatus { get; set; }
         public string Comments { get; set; }
