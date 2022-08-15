@@ -22,7 +22,7 @@ namespace MyRestaurant.Utility
 
         public const string PaymentStatusPending = "Pending";
         public const string PaymentStatusApproved = "Approved";
-        public const string PaymentStatusRegected = "Regected";
+        public const string PaymentStatusRejected = "Rejected";
 
 
 

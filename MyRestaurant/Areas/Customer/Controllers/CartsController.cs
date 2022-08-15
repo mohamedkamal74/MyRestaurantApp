@@ -6,6 +6,7 @@ using MyRestaurant.Data;
 using MyRestaurant.Models;
 using MyRestaurant.Utility;
 using MyRestaurant.ViewModels;
+using Stripe;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -178,11 +179,45 @@ namespace MyRestaurant.Areas.Customer.Controllers
             HttpContext.Session.SetInt32(SD.ShoppingCartCount, 0);
             await _context.SaveChangesAsync();
 
+            var options = new ChargeCreateOptions
+            {
+                Amount = Convert.ToInt32(OrderDetailsCartVM.OrderHeader.OrderTotal * 100),
+                Currency = "usd",
+                Description = "Order Id : " + OrderDetailsCartVM.OrderHeader.Id,
+                Source=stripeToken
+            };
 
+            var service = new ChargeService();
+            Charge charge=service.Create(options);
 
+            if (charge.BalanceTransactionId == null)
+            {
+                OrderDetailsCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
+            }
+            else
+            {
+                OrderDetailsCartVM.OrderHeader.TransctionId=charge.BalanceTransactionId;  
+
+            }
+
+            if (charge.Status.ToLower() == "succeeded")
+            {
+                OrderDetailsCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
+                OrderDetailsCartVM.OrderHeader.Status = SD.StatusSubmited;
+            }
+            else
+            {
+                OrderDetailsCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
+
+            }
+            await _context.SaveChangesAsync();
 
             return RedirectToAction("Index","Home");
         }
+
+
+
+
         public IActionResult ApplyCopoun()
         {
             if (OrderDetailsCartVM.OrderHeader.CopounCode == null)
