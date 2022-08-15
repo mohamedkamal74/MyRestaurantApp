@@ -110,6 +110,9 @@ namespace MyRestaurant.Areas.Customer.Controllers
             return View(OrderDetailsCartVM);
         }
 
+
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Summary")]
@@ -148,7 +151,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
                     Count = item.Count
                 };
 
-                OrderDetailsCartVM.OrderHeader.OrderTotal = item.MenuItem.Price * item.Count;
+                OrderDetailsCartVM.OrderHeader.OrderTotal += item.MenuItem.Price * item.Count;
 
                 _context.OrderDetails.Add(orderDetails);
                
@@ -166,7 +169,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
             }
             else
             {
-                OrderDetailsCartVM.OrderHeader.OrderTotal = Math.Round(OrderDetailsCartVM.OrderHeader.OrderTotalOriginal,2);
+                OrderDetailsCartVM.OrderHeader.OrderTotal = Math.Round(OrderDetailsCartVM.OrderHeader.OrderTotalOriginal, 2);
             }
 
             OrderDetailsCartVM.OrderHeader.CopounCodeDiscount = OrderDetailsCartVM.OrderHeader.OrderTotalOriginal - OrderDetailsCartVM.OrderHeader.OrderTotal;

@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyRestaurant.Data;
 using MyRestaurant.Services;
+using MyRestaurant.Utility;
 using NToastNotify;
 using System;
 using System.Collections.Generic;
@@ -65,6 +66,8 @@ namespace MyRestaurant
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly=true;
             });
+
+            services.Configure<StripesSettings>(Configuration.GetSection("Stripe"));
            
         }
 
