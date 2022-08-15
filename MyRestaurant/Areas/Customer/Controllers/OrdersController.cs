@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyRestaurant.Data;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
             _context = context;
         }
 
+        [Authorize]
         public async Task<IActionResult>Confirm(int id)
         {
             var claimsidentity = (ClaimsIdentity)User.Identity;
@@ -25,7 +27,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
             var orderdetailsVM = new ViewModels.OrderDetailsViewModel
             {
                 OrderDetails =await _context.OrderDetails.Where(x=>x.OrderId==id).ToListAsync(),
-                OrderHeader=await _context.OrderHeaders.FirstOrDefaultAsync(x=>x.Id==id&&x.UserId==claim.Value)
+                OrderHeader=await _context.OrderHeaders.Include(x=>x.ApplicationUser).FirstOrDefaultAsync(x=>x.Id==id&&x.UserId==claim.Value)
             };
             return View(orderdetailsVM);
         }
