@@ -212,7 +212,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
             }
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Confirm","Orders",new {id=OrderDetailsCartVM.OrderHeader.Id});
         }
 
 
