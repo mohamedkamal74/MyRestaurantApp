@@ -12,6 +12,7 @@ using MyRestaurant.Data;
 using MyRestaurant.Services;
 using MyRestaurant.Utility;
 using NToastNotify;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -89,6 +90,8 @@ namespace MyRestaurant
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            StripeConfiguration.ApiKey = Configuration.GetSection("Stripe")["SecretKey"];
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -116,7 +116,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Summary")]
-        public async Task<IActionResult> SummaryPost()
+        public async Task<IActionResult> SummaryPost(string stripeToken)
         {
 
             var claimsidentity = (ClaimsIdentity)User.Identity;
@@ -151,7 +151,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
                     Count = item.Count
                 };
 
-                OrderDetailsCartVM.OrderHeader.OrderTotal += item.MenuItem.Price * item.Count;
+                OrderDetailsCartVM.OrderHeader.OrderTotalOriginal += item.MenuItem.Price * item.Count;
 
                 _context.OrderDetails.Add(orderDetails);
                
@@ -177,6 +177,9 @@ namespace MyRestaurant.Areas.Customer.Controllers
             _context.ShoppingCarts.RemoveRange(OrderDetailsCartVM.ShoppingCartsList);
             HttpContext.Session.SetInt32(SD.ShoppingCartCount, 0);
             await _context.SaveChangesAsync();
+
+
+
 
             return RedirectToAction("Index","Home");
         }
