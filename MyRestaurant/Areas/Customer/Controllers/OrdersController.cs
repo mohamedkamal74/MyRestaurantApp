@@ -57,5 +57,18 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
 
         }
+
+        public async Task<IActionResult>GetOrderDetails(int id)
+        {
+            OrderDetailsViewModel orderDetailsVm = new OrderDetailsViewModel
+            {
+                OrderHeader=await _context.OrderHeaders.Include(m=>m.ApplicationUser).FirstOrDefaultAsync(m=>m.Id==id),
+                OrderDetails=await _context.OrderDetails.Where(m=>m.OrderId==id).ToListAsync()
+            };
+
+            return PartialView("_IndividualOrderDetails", orderDetailsVm);
+
+
+        }
     }
 }
