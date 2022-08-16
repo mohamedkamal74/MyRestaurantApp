@@ -1,0 +1,78 @@
+﻿@model IEnumerable<OrderDetailsViewModel>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="whiteBackGround border">
+    <div class="row">
+        <div class="col-6">
+            <h2 class="text-info">Order History List</h2>
+        </div>
+        <div class="col-6 text-right">
+            <partial name="_CreateButton" />
+        </div>
+    </div>
+    <div>
+        @if (!Model.Any())
+        {
+            <h3 class="text-danger">No Order History ......</h3>
+        }
+        else
+        {
+            <table class="table table-striped border">
+                <tr class="table-secondary">
+                    <th>
+                        @Html.DisplayNameFor(m=>m.OrderHeader.Id)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(m=>m.OrderHeader.PickUpName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(m=>m.OrderHeader.ApplicationUser.Email)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(m=>m.OrderHeader.PickUpTime)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(m=>m.OrderHeader.OrderTotal)
+                    </th>
+                    <th>
+                        Total Items
+                    </th>
+                    <th>
+
+                    </th>
+                </tr>
+                @foreach (var item in Model)
+               {
+                  <tr>
+                      <td>
+                          @Html.DisplayFor(m=>item.OrderHeader.Id)
+                      </td>
+                      <td>
+                          @Html.DisplayFor(m=>item.OrderHeader.PickUpName)
+                      </td>
+                      <td>
+                          @Html.DisplayFor(m=>item.OrderHeader.ApplicationUser.Email)
+                      </td>
+                      <td>
+                          @Html.DisplayFor(m=>item.OrderHeader.PickUpTime)
+                      </td>
+                      <td>
+                          @Html.DisplayFor(m=>item.OrderHeader.OrderTotal)
+                      </td>
+                      <td>
+                          @Html.DisplayFor(m=>item.OrderDetails.Count)
+                      </td>
+                      <td style="width:150px">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-list-alt"></i> Details
+                        </button>
+                      </td>
+                  </tr> 
+               }
+            </table>
+        }
+    </div>
+</div>
+
