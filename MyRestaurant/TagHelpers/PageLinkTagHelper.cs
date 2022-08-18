@@ -22,7 +22,7 @@ namespace MyRestaurant.TagHelpers
 
         public ViewContext ViewContext { get; set; }
 
-        public PagingInfo PagingInfo { get; set; }
+        public PagingInfo PageModel { get; set; }
         public string  PageAction { get; set; }
         public bool PageClassesEnabled { get; set; }
         public string  PageClass { get; set; }
@@ -33,15 +33,15 @@ namespace MyRestaurant.TagHelpers
             IUrlHelper urlHelper = _urlHelperFactory.GetUrlHelper(ViewContext);
             TagBuilder result = new TagBuilder("div");
 
-            for (int i = 1; i < PagingInfo.TotalPages; i++)
+            for (int i = 1; i <= PageModel.TotalPages; i++)
             {
                 TagBuilder tag = new TagBuilder("a");
-                string url = PagingInfo.UrlParam.Replace(":", i.ToString());
+                string url = PageModel.UrlParam.Replace(":", i.ToString());
                 tag.Attributes["href"] = url;
                 if (PageClassesEnabled)
                 {
                     tag.AddCssClass(PageClass);
-                    tag.AddCssClass(i == PagingInfo.CurrentPage ? PageClassSelected : PageClassNormal);
+                    tag.AddCssClass(i == PageModel.CurrentPage ? PageClassSelected : PageClassNormal);
                 }
                 tag.InnerHtml.Append(i.ToString());
                 result.InnerHtml.AppendHtml(tag);

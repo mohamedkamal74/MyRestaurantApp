@@ -1,0 +1,31 @@
+﻿@using MyRestaurant.Utility
+@model string 
+
+
+<div style="width:100%">
+@if(Model==SD.StatusSubmited)
+{
+
+    <img src="~/Images/Market-PNG-Free-Download.png" width:"100%"/>
+}
+@if(Model==SD.StatusInProcess)
+{
+    <img src="~/Images/order-processing-.webp" width:"100%"/>
+
+
+}
+@if(Model==SD.StatusReady)
+{
+
+    <img src="~/Images/ready.jpg" width:"100%"/>
+
+}
+@if(Model==SD.StatusCompleted)
+{
+
+    <img src="~/Images/completed-order.jpg" width:"100%"/>
+
+}
+
+
+</div>

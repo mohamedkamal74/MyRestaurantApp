@@ -1,4 +1,5 @@
-﻿@model OrderListViewModel
+﻿@using MyRestaurant.Utility
+@model OrderListViewModel
 @{
     ViewData["Title"] = "Index";
 }
@@ -9,7 +10,7 @@
             <h2 class="text-info">Order History List</h2>
         </div>
         <div class="col-6 text-right">
-            <partial name="_CreateButton" />
+           
         </div>
     </div>
     <div>
@@ -66,10 +67,19 @@
                         </td>
 
 
-                        <td style="width:150px">
-                            <button type="submit" class="btn btn-success showDetails" data-id="@item.OrderHeader.Id" data-toggle="modal">
+                        <td >
+                            <button type="submit" class="btn btn-success showDetails btn-sm" data-id="@item.OrderHeader.Id" data-toggle="modal">
                                 <i class="fas fa-list-alt"></i> Details
                             </button>
+
+
+                            @if (item.OrderHeader.Status == SD.StatusSubmited || item.OrderHeader.Status == SD.StatusInProcess
+                           || item.OrderHeader.Status == SD.StatusCompleted || item.OrderHeader.Status == SD.StatusReady)
+                            {
+                                <button type="submit" class="btn btn-info showStatus btn-sm" data-id="@item.OrderHeader.Id" data-toggle="modal">
+                                    <i class="fas fa-clock"></i> Status
+                                </button>
+                            }
                         </td>
 
                     </tr>
@@ -77,8 +87,7 @@
             </table>
 
             <div page-model="@Model.PagingInfo" page-classes-enabled=true page-class="btn border"
-            page-class-normal="btn btn-light" page-class-selected="btn btn-info active" class="btn-group float-right" >
-
+             page-class-normal="btn btn-light" page-class-selected="btn btn-info active" class="btn-group float-right">
             </div>
 
             <br />
@@ -99,7 +108,6 @@
             </div>
 
             <div class="modal-body justify-content-center" id="myModalContent">
-
             </div>
 
             <div class="modal-footer">
@@ -125,7 +133,7 @@
     var URL='/Customer/Orders/GetOrderDetails';
 
     $(function (){
-       
+
          $(".showDetails").click(function (){
 
             var $buttonClicked=$(this);
