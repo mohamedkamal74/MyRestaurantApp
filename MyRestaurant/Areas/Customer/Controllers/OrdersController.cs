@@ -35,13 +35,22 @@ namespace MyRestaurant.Areas.Customer.Controllers
             return View(orderdetailsVM);
         }
 
+
+
+        private int PageSize = 2;
         [Authorize]
-        public async Task<IActionResult> OrderHistory()
+        public async Task<IActionResult> OrderHistory(int PageNumber=1)
         {
             var claimsidentity = (ClaimsIdentity)User.Identity;
             var claim = claimsidentity.FindFirst(ClaimTypes.NameIdentifier);
 
-            List<OrderDetailsViewModel> orderDetailsViewModels = new List<OrderDetailsViewModel>();
+            //  List<OrderDetailsViewModel> orderDetailsViewModels = new List<OrderDetailsViewModel>();
+
+            OrderListViewModel orderListVM = new OrderListViewModel
+            {
+                Orders=new List<OrderDetailsViewModel>()
+            };
+
             List<OrderHeader> orderHeadersList = await _context.OrderHeaders.Include(m => m.ApplicationUser).Where(m => m.UserId == claim.Value).ToListAsync();
 
             foreach (var orderHeader in orderHeadersList)
@@ -51,9 +60,21 @@ namespace MyRestaurant.Areas.Customer.Controllers
                     OrderHeader = orderHeader,
                     OrderDetails = await _context.OrderDetails.Where(m => m.OrderId == orderHeader.Id).ToListAsync()
                 };
-                orderDetailsViewModels.Add(orderDetailsVM);
+                orderListVM.Orders.Add(orderDetailsVM);
             }
-            return View(orderDetailsViewModels);
+
+            var count = orderListVM.Orders.Count;
+            orderListVM.Orders = orderListVM.Orders.OrderByDescending(x => x.OrderHeader.Id).Skip((PageNumber - 1) * PageSize).Take(PageSize).ToList();
+
+            orderListVM.PagingInfo = new PagingInfo
+            {
+                CurrentPage=PageNumber,
+                RecordsPerPage=PageSize,
+                TotalRecords=count,
+                UrlParam= "/Customer/Orders/OrderHistory?PageNumber=:"
+            };
+
+            return View(orderListVM);
 
 
         }

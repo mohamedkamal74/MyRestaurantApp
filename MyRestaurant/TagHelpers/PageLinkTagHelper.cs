@@ -43,7 +43,10 @@ namespace MyRestaurant.TagHelpers
                     tag.AddCssClass(PageClass);
                     tag.AddCssClass(i == PagingInfo.CurrentPage ? PageClassSelected : PageClassNormal);
                 }
+                tag.InnerHtml.Append(i.ToString());
+                result.InnerHtml.AppendHtml(tag);
             }
+            output.Content.AppendHtml(result.InnerHtml);
         }
     }
 }
