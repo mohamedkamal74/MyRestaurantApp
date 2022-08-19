@@ -125,12 +125,39 @@
 
 
 
+<div class="modal fade" id="myOrderStatus" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <div class="modal-dialog-centered modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info  text-light justify-content-center">
+
+                <h5 class="modal-title ">Order Status</h5>
+            </div>
+
+            <div class="modal-body justify-content-center" id="myOrderStatusContent">
+            </div>
+
+            <div class="modal-footer">
+
+                <button class="btn btn-secondary" style="width:20%" data-dismiss="modal">
+                    Close
+                </button>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+
 
 
 @section Scripts{
 
 <script>
     var URL='/Customer/Orders/GetOrderDetails';
+    var URLOrderStatus='/Customer/Orders/GetOrderStatus';
 
     $(function (){
 
@@ -143,7 +170,7 @@
 
                 type:"GET",
                 url:URL,
-                contentType:"GET",
+                contentType:"text/html; charset=utf-8",
                 data:{ "id" : id },
                 cache:false,
                 dataType:"html",
@@ -165,6 +192,38 @@
 
                  });
 
+     
+
+      $(".showStatus").click(function (){
+
+            var $buttonClicked=$(this);
+            var id=$buttonClicked.attr('data-id');
+
+            $.ajax({
+
+                type:"GET",
+                url:URLOrderStatus,
+                contentType:"text/html; charset=utf-8",
+                data:{ "id" : id },
+                cache:false,
+                dataType:"html",
+                success : function (data){
+
+                    $('#myOrderStatusContent').html(data);
+                    $('#myOrderStatus').modal('show');
+
+                },
+                error : function (){
+
+                    alert("Dynamic content load failed");
+                }
+
+
+
+
+            });
+
+                 });
 
     });
 </script>

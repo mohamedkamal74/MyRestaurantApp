@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyRestaurant.Data;
 using MyRestaurant.Models;
+using MyRestaurant.Utility;
 using MyRestaurant.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,6 +80,34 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
         }
 
+
+        [Authorize(Roles =SD.ManagerUser+","+SD.StatusInProcess)]
+        public async Task<IActionResult> OrderManager()
+        {
+            
+            
+
+             List<OrderDetailsViewModel> orderDetailsViewModels = new List<OrderDetailsViewModel>();
+
+            
+
+            List<OrderHeader> orderHeadersList = await _context.OrderHeaders.Where(m => m.Status==SD.StatusInProcess||m.Status==SD.StatusSubmited).ToListAsync();
+
+            foreach (var orderHeader in orderHeadersList)
+            {
+                OrderDetailsViewModel orderDetailsVM = new OrderDetailsViewModel
+                {
+                    OrderHeader = orderHeader,
+                    OrderDetails = await _context.OrderDetails.Where(m => m.OrderId == orderHeader.Id).ToListAsync()
+                };
+                orderDetailsViewModels.Add(orderDetailsVM);
+            }
+
+            return View(orderDetailsViewModels.OrderBy(o=>o.OrderHeader.PickUpTime).ToList());
+
+
+        }
+
         public async Task<IActionResult>GetOrderDetails(int id)
         {
             OrderDetailsViewModel orderDetailsVm = new OrderDetailsViewModel
@@ -89,6 +118,13 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
             return PartialView("_IndividualOrderDetails", orderDetailsVm);
 
+
+        }
+
+        public async Task<IActionResult>GetOrderStatus(int id)
+        {
+            var orderHeader = await _context.OrderHeaders.FindAsync(id) ;
+            return PartialView("_OrderStatus", orderHeader.Status);
 
         }
     }

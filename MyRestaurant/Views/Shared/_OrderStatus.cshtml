@@ -2,28 +2,27 @@
 @model string 
 
 
-<div style="width:100%">
+<div style="width:50%">
 @if(Model==SD.StatusSubmited)
 {
-
-    <img src="~/Images/Market-PNG-Free-Download.png" width:"100%"/>
+    <img src="~/Images/order submit.jpg" style="width:400px;height:200px"/>
 }
 @if(Model==SD.StatusInProcess)
 {
-    <img src="~/Images/order-processing-.webp" width:"100%"/>
+    <img src="~/Images/order-processing-.webp"  style="width:300px;height:200px"/>
 
 
 }
 @if(Model==SD.StatusReady)
 {
 
-    <img src="~/Images/ready.jpg" width:"100%"/>
+    <img src="~/Images/ready.jpg"  style="width:300px;height:200px"/>
 
 }
 @if(Model==SD.StatusCompleted)
 {
 
-    <img src="~/Images/completed-order.jpg" width:"100%"/>
+    <img src="~/Images/completed-order.jpg"  style="width:300px;height:200px"/>
 
 }
 
