@@ -82,7 +82,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
 
         [Authorize(Roles =SD.ManagerUser+","+SD.StatusInProcess)]
-        public async Task<IActionResult> OrderManager()
+        public async Task<IActionResult> ManageOrder()
         {
             
             

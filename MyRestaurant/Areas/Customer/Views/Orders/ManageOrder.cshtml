@@ -1,0 +1,98 @@
+﻿@using MyRestaurant.Utility
+@model IEnumerable<OrderDetailsViewModel>
+@{
+    ViewData["Title"] = "ManageOrder";
+}
+
+<h2 class="text-info">Manage Order</h2>
+<br />
+
+@if (Model.Any())
+{
+    <div class="container row bg-white  p-2 border mb-3 rounded">
+        @foreach (var item in Model)
+       {
+           <div class="col-12 pb-3 pt-3 ">
+               <div class="whiteBackGround " style="padding:10px;border-radius:5px">
+                   <div class="row">
+                       <div class="col-4">
+                       Order ID : @item.OrderHeader.Id
+                       <ul class="text-info">
+
+                           @foreach (var details in item.OrderDetails)
+                           {
+                               <li> @details.Name x @details.Count</li>
+                               
+                           }
+                       </ul>
+                       </div>
+
+                       <div  class="col-4 pb-2">
+
+                           <div class="input-group mb-2">
+                               <div class="input-group-append">
+                                   <span class="input-group-text">
+                                       Time
+                                   </span>
+
+                               </div>
+                               <input type="text" class="border rounded form-control" readonly value="@item.OrderHeader.PickUpTime"/>
+                           </div>
+
+                            @{
+                                var comment = item.OrderHeader.Comments;
+                                if(comment==null || comment.Trim().Length == 0)
+                                {
+                                    item.OrderHeader.Comments = "No Instructions";
+                                }
+                            }
+
+                            <textarea class="border rounded form-control" readonly style="width:100%;height:75px" asp-for="@item.OrderHeader.Comments">
+                                @item.OrderHeader.Comments
+                            </textarea>
+
+                       </div>
+
+                       <div class="col-3 offset-1 d-flex justify-content-center align-items-xl-center">
+                           <div class="col-12">
+
+                            @if (item.OrderHeader.Status.Equals(SD.StatusSubmited) )
+                            {
+                                <button class="btn btn-info form-control mb-4" asp-action="OrderPrepare"
+                                type="submit" asp-route-orderId="@item.OrderHeader.Id">
+                                <i class="fas fa-check"></i> Start Cooking
+
+                                </button>
+                            }
+                             @if (item.OrderHeader.Status.Equals(SD.StatusInProcess))
+                            {
+                                <button class="btn btn-success form-control  mb-4" asp-action="OrderReady"
+                                type="submit" asp-route-orderId="@item.OrderHeader.Id">
+                                <i class="fas fa-flag-checkered"></i> Order Ready
+
+                                </button>
+                            }
+
+                             <button class="btn btn-danger form-control mb-4" asp-action="OrderCancel"
+                                type="submit" asp-route-orderId="@item.OrderHeader.Id">
+                                <i class="fas fa-times"></i> Cancel Order 
+
+                                </button>
+
+                        </div>
+                       </div>
+
+                   </div>
+
+               </div>
+
+
+           </div>
+           
+           
+       }
+
+    </div>
+
+}
+
