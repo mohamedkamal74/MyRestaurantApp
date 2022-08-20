@@ -8,6 +8,7 @@ using MyRestaurant.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MyRestaurant.Areas.Customer.Controllers
@@ -126,9 +127,9 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
 
         [Authorize(Roles = SD.ManagerUser + "," + SD.StatusInProcess)]
-        public async Task<IActionResult> OrderPrepare(int ordereId)
+        public async Task<IActionResult> OrderPrepare(int orderId)
         {
-            var orderheader = await _context.OrderHeaders.FindAsync(ordereId);
+            var orderheader = await _context.OrderHeaders.FindAsync(orderId);
             orderheader.Status = SD.StatusInProcess;
 
             await _context.SaveChangesAsync();
@@ -136,9 +137,9 @@ namespace MyRestaurant.Areas.Customer.Controllers
         }
 
         [Authorize(Roles = SD.ManagerUser + "," + SD.StatusInProcess)]
-        public async Task<IActionResult> OrderReady(int ordereId)
+        public async Task<IActionResult> OrderReady(int orderId)
         {
-            var orderheader = await _context.OrderHeaders.FindAsync(ordereId);
+            var orderheader = await _context.OrderHeaders.FindAsync(orderId);
             orderheader.Status = SD.StatusReady;
 
             await _context.SaveChangesAsync();
@@ -147,13 +148,84 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
 
         [Authorize(Roles = SD.ManagerUser + "," + SD.StatusInProcess)]
-        public async Task<IActionResult> OrderCancel(int ordereId)
+        public async Task<IActionResult> OrderCancel(int orderId)
         {
-            var orderheader = await _context.OrderHeaders.FindAsync(ordereId);
+            var orderheader = await _context.OrderHeaders.FindAsync(orderId);
             orderheader.Status = SD.StatusCancelled;
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(ManageOrder));
+        }
+
+
+        [Authorize(Roles =SD.ManagerUser +","+SD.FrontDeskUser)]
+        public async Task<IActionResult> OrderPickup(int PageNumber = 1,string searchName=null, string searchPhone = null, string searchEmail = null)
+        {
+           
+            OrderListViewModel orderListVM = new OrderListViewModel
+            {
+                Orders = new List<OrderDetailsViewModel>()
+            };
+
+            StringBuilder param=new StringBuilder();
+            param.Append("/Customer/Orders/OrderPickup?PageNumber=:");
+
+            param.Append("&searchName=");
+            if(searchName != null)
+            {
+                param.Append(searchName);
+            }
+            else
+            {
+                searchName= string.Empty;
+            }
+
+            param.Append("&searchPhone=");
+            if (searchPhone != null)
+            {
+                param.Append(searchPhone);
+            }
+            else
+            {
+                searchPhone = string.Empty;
+            }
+
+            param.Append("&searchEmail=");
+            if (searchEmail != null)
+            {
+                param.Append(searchEmail);
+            }
+            else
+            {
+                searchEmail = string.Empty;
+            }
+
+            List<OrderHeader> orderHeadersList = await _context.OrderHeaders.Include(m => m.ApplicationUser).Where(m => m.Status==SD.StatusReady).ToListAsync();
+
+            foreach (var orderHeader in orderHeadersList)
+            {
+                OrderDetailsViewModel orderDetailsVM = new OrderDetailsViewModel
+                {
+                    OrderHeader = orderHeader,
+                    OrderDetails = await _context.OrderDetails.Where(m => m.OrderId == orderHeader.Id).ToListAsync()
+                };
+                orderListVM.Orders.Add(orderDetailsVM);
+            }
+
+            var count = orderListVM.Orders.Count;
+            orderListVM.Orders = orderListVM.Orders.OrderByDescending(x => x.OrderHeader.Id).Skip((PageNumber - 1) * PageSize).Take(PageSize).ToList();
+
+            orderListVM.PagingInfo = new PagingInfo
+            {
+                CurrentPage = PageNumber,
+                RecordsPerPage = PageSize,
+                TotalRecords = count,
+                UrlParam = param.ToString()
+            };
+
+            return View(orderListVM);
+
+
         }
 
     }

@@ -76,7 +76,7 @@
                                     }
                                     @if (User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.FrontDeskUser))
                                     {
-                                        <a class="dropdown-item" asp-action="PickupOrder" asp-controller="Orders" asp-area="Customer">Pickup Order</a>
+                                        <a class="dropdown-item" asp-action="OrderPickup" asp-controller="Orders" asp-area="Customer">Order Pickup</a>
 
                                     }
                                 </div>

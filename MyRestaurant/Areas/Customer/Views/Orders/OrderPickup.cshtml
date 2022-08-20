@@ -4,19 +4,51 @@
     ViewData["Title"] = "Index";
 }
 
+<form method="get">
+    <br />
+    <br />
+            <h2 class="text-info">Order ready for PickUp</h2>
+
+    <br />
+
 <div class="whiteBackGround border">
-    <div class="row">
-        <div class="col-6">
-            <h2 class="text-info">Order History List</h2>
+
+    <div class="container border border-secondary mb-3" style="height:60px">
+
+        <div class="row container ">
+
+            <div class="col-11">
+                <div class="row" style="padding-top:10px">
+
+                    <div class="col-4">
+                        @Html.Editor("searchName",new {htmlAttributes=new {@class="form-control",@placeholder="Name ....."}})
+                    </div>
+                      <div class="col-4">
+                        @Html.Editor("searchPhone",new {htmlAttributes=new {@class="form-control",@placeholder="Phone ....."}})
+                    </div>
+                      <div class="col-4">
+                        @Html.Editor("searchEmail",new {htmlAttributes=new {@class="form-control",@placeholder="Email ....."}})
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            <div class="col-1">
+                <div class="row " style="padding-top:10px">
+                    <button type="submit" class="btn btn-primary form-control" value="search">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="col-6 text-right">
-           
-        </div>
+       
     </div>
     <div>
         @if (!Model.Orders.Any())
         {
-            <h3 class="text-danger">No Order History ......</h3>
+            <h3 class="text-danger">No Order PickUp ......</h3>
         }
         else
         {
@@ -67,19 +99,11 @@
                         </td>
 
 
-                        <td >
+                        <td>
                             <button type="button" class="btn btn-success showDetails btn-sm" data-id="@item.OrderHeader.Id" data-toggle="modal">
                                 <i class="fas fa-list-alt"></i> Details
                             </button>
 
-
-                            @if (item.OrderHeader.Status == SD.StatusSubmited || item.OrderHeader.Status == SD.StatusInProcess
-                           || item.OrderHeader.Status == SD.StatusCompleted || item.OrderHeader.Status == SD.StatusReady)
-                            {
-                                <button type="button" class="btn btn-info showStatus btn-sm" data-id="@item.OrderHeader.Id" data-toggle="modal">
-                                    <i class="fas fa-clock"></i> Status
-                                </button>
-                            }
                         </td>
 
                     </tr>
@@ -95,7 +119,7 @@
     </div>
 </div>
 
-
+</form>
 
 
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -125,39 +149,11 @@
 
 
 
-<div class="modal fade" id="myOrderStatus" tabindex="-1" role="dialog" aria-hidden="true">
-
-    <div class="modal-dialog-centered modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-info  text-light justify-content-center">
-
-                <h5 class="modal-title ">Order Status</h5>
-            </div>
-
-            <div class="modal-body justify-content-center" id="myOrderStatusContent">
-            </div>
-
-            <div class="modal-footer">
-
-                <button class="btn btn-secondary" style="width:20%" data-dismiss="modal">
-                    Close
-                </button>
-            </div>
-        </div>
-
-
-    </div>
-
-</div>
-
-
-
 
 @section Scripts{
 
 <script>
     var URL='/Customer/Orders/GetOrderDetails';
-    var URLOrderStatus='/Customer/Orders/GetOrderStatus';
 
     $(function (){
 
@@ -178,39 +174,6 @@
 
                     $('#myModalContent').html(data);
                     $('#myModal').modal('show');
-
-                },
-                error : function (){
-
-                    alert("Dynamic content load failed");
-                }
-
-
-
-
-            });
-
-                 });
-
-     
-
-      $(".showStatus").click(function (){
-
-            var $buttonClicked=$(this);
-            var id=$buttonClicked.attr('data-id');
-
-            $.ajax({
-
-                type:"GET",
-                url:URLOrderStatus,
-                contentType:"text/html; charset=utf-8",
-                data:{ "id" : id },
-                cache:false,
-                dataType:"html",
-                success : function (data){
-
-                    $('#myOrderStatusContent').html(data);
-                    $('#myOrderStatus').modal('show');
 
                 },
                 error : function (){
