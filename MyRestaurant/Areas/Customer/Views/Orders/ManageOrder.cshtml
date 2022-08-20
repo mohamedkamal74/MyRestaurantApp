@@ -5,10 +5,13 @@
 }
 
 <h2 class="text-info">Manage Order</h2>
+
+<form method="post">
 <br />
 
 @if (Model.Any())
 {
+
     <div class="container row bg-white  p-2 border mb-3 rounded">
         @foreach (var item in Model)
        {
@@ -96,3 +99,4 @@
 
 }
 
+</form>

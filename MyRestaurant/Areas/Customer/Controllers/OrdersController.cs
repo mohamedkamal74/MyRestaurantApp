@@ -23,15 +23,15 @@ namespace MyRestaurant.Areas.Customer.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult>Confirm(int id)
+        public async Task<IActionResult> Confirm(int id)
         {
             var claimsidentity = (ClaimsIdentity)User.Identity;
             var claim = claimsidentity.FindFirst(ClaimTypes.NameIdentifier);
 
             var orderdetailsVM = new ViewModels.OrderDetailsViewModel
             {
-                OrderDetails =await _context.OrderDetails.Where(x=>x.OrderId==id).ToListAsync(),
-                OrderHeader=await _context.OrderHeaders.Include(x=>x.ApplicationUser).FirstOrDefaultAsync(x=>x.Id==id&&x.UserId==claim.Value)
+                OrderDetails = await _context.OrderDetails.Where(x => x.OrderId == id).ToListAsync(),
+                OrderHeader = await _context.OrderHeaders.Include(x => x.ApplicationUser).FirstOrDefaultAsync(x => x.Id == id && x.UserId == claim.Value)
             };
             return View(orderdetailsVM);
         }
@@ -40,7 +40,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
         private int PageSize = 2;
         [Authorize]
-        public async Task<IActionResult> OrderHistory(int PageNumber=1)
+        public async Task<IActionResult> OrderHistory(int PageNumber = 1)
         {
             var claimsidentity = (ClaimsIdentity)User.Identity;
             var claim = claimsidentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -49,7 +49,7 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
             OrderListViewModel orderListVM = new OrderListViewModel
             {
-                Orders=new List<OrderDetailsViewModel>()
+                Orders = new List<OrderDetailsViewModel>()
             };
 
             List<OrderHeader> orderHeadersList = await _context.OrderHeaders.Include(m => m.ApplicationUser).Where(m => m.UserId == claim.Value).ToListAsync();
@@ -69,10 +69,10 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
             orderListVM.PagingInfo = new PagingInfo
             {
-                CurrentPage=PageNumber,
-                RecordsPerPage=PageSize,
-                TotalRecords=count,
-                UrlParam= "/Customer/Orders/OrderHistory?PageNumber=:"
+                CurrentPage = PageNumber,
+                RecordsPerPage = PageSize,
+                TotalRecords = count,
+                UrlParam = "/Customer/Orders/OrderHistory?PageNumber=:"
             };
 
             return View(orderListVM);
@@ -81,17 +81,13 @@ namespace MyRestaurant.Areas.Customer.Controllers
         }
 
 
-        [Authorize(Roles =SD.ManagerUser+","+SD.StatusInProcess)]
+        [Authorize(Roles = SD.ManagerUser + "," + SD.StatusInProcess)]
         public async Task<IActionResult> ManageOrder()
         {
-            
-            
 
-             List<OrderDetailsViewModel> orderDetailsViewModels = new List<OrderDetailsViewModel>();
+            List<OrderDetailsViewModel> orderDetailsViewModels = new List<OrderDetailsViewModel>();
 
-            
-
-            List<OrderHeader> orderHeadersList = await _context.OrderHeaders.Where(m => m.Status==SD.StatusInProcess||m.Status==SD.StatusSubmited).ToListAsync();
+            List<OrderHeader> orderHeadersList = await _context.OrderHeaders.Where(m => m.Status == SD.StatusInProcess || m.Status == SD.StatusSubmited).ToListAsync();
 
             foreach (var orderHeader in orderHeadersList)
             {
@@ -103,17 +99,17 @@ namespace MyRestaurant.Areas.Customer.Controllers
                 orderDetailsViewModels.Add(orderDetailsVM);
             }
 
-            return View(orderDetailsViewModels.OrderBy(o=>o.OrderHeader.PickUpTime).ToList());
+            return View(orderDetailsViewModels.OrderBy(o => o.OrderHeader.PickUpTime).ToList());
 
 
         }
 
-        public async Task<IActionResult>GetOrderDetails(int id)
+        public async Task<IActionResult> GetOrderDetails(int id)
         {
             OrderDetailsViewModel orderDetailsVm = new OrderDetailsViewModel
             {
-                OrderHeader=await _context.OrderHeaders.Include(m=>m.ApplicationUser).FirstOrDefaultAsync(m=>m.Id==id),
-                OrderDetails=await _context.OrderDetails.Where(m=>m.OrderId==id).ToListAsync()
+                OrderHeader = await _context.OrderHeaders.Include(m => m.ApplicationUser).FirstOrDefaultAsync(m => m.Id == id),
+                OrderDetails = await _context.OrderDetails.Where(m => m.OrderId == id).ToListAsync()
             };
 
             return PartialView("_IndividualOrderDetails", orderDetailsVm);
@@ -121,11 +117,44 @@ namespace MyRestaurant.Areas.Customer.Controllers
 
         }
 
-        public async Task<IActionResult>GetOrderStatus(int id)
+        public async Task<IActionResult> GetOrderStatus(int id)
         {
-            var orderHeader = await _context.OrderHeaders.FindAsync(id) ;
+            var orderHeader = await _context.OrderHeaders.FindAsync(id);
             return PartialView("_OrderStatus", orderHeader.Status);
 
         }
+
+
+        [Authorize(Roles = SD.ManagerUser + "," + SD.StatusInProcess)]
+        public async Task<IActionResult> OrderPrepare(int ordereId)
+        {
+            var orderheader = await _context.OrderHeaders.FindAsync(ordereId);
+            orderheader.Status = SD.StatusInProcess;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ManageOrder));
+        }
+
+        [Authorize(Roles = SD.ManagerUser + "," + SD.StatusInProcess)]
+        public async Task<IActionResult> OrderReady(int ordereId)
+        {
+            var orderheader = await _context.OrderHeaders.FindAsync(ordereId);
+            orderheader.Status = SD.StatusReady;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ManageOrder));
+        }
+
+
+        [Authorize(Roles = SD.ManagerUser + "," + SD.StatusInProcess)]
+        public async Task<IActionResult> OrderCancel(int ordereId)
+        {
+            var orderheader = await _context.OrderHeaders.FindAsync(ordereId);
+            orderheader.Status = SD.StatusCancelled;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ManageOrder));
+        }
+
     }
 }
