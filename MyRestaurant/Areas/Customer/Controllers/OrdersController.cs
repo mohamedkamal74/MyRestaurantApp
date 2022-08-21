@@ -200,7 +200,9 @@ namespace MyRestaurant.Areas.Customer.Controllers
                 searchEmail = string.Empty;
             }
 
-            List<OrderHeader> orderHeadersList = await _context.OrderHeaders.Include(m => m.ApplicationUser).Where(m => m.Status==SD.StatusReady).ToListAsync();
+            List<OrderHeader> orderHeadersList = await _context.OrderHeaders.Include(m => m.ApplicationUser)
+                .OrderByDescending(m=>m.OrderDate).Where(m => m.Status==SD.StatusReady&&m.PickUpName.ToLower().Contains(searchName)
+                &&m.PhoneNumber.Contains(searchPhone)&&m.ApplicationUser.Email.Contains(searchEmail)).ToListAsync();
 
             foreach (var orderHeader in orderHeadersList)
             {
@@ -226,6 +228,18 @@ namespace MyRestaurant.Areas.Customer.Controllers
             return View(orderListVM);
 
 
+        }
+
+
+        [Authorize(Roles = SD.ManagerUser + "," + SD.FrontDeskUser)]
+        [HttpPost]
+        public async Task<IActionResult> OrderPickup(int orderId)
+        {
+            var orderheader = await _context.OrderHeaders.FindAsync(orderId);
+            orderheader.Status = SD.StatusCompleted;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ManageOrder));
         }
 
     }
