@@ -68,6 +68,13 @@ namespace MyRestaurant
                 options.Cookie.HttpOnly=true;
             });
 
+            services.AddAuthentication().AddGoogle(options =>
+            {
+                IConfigurationSection googleAutSection = Configuration.GetSection("Authentication:google");
+                options.ClientId = googleAutSection["ClientId"];
+                options.ClientSecret = googleAutSection["ClientSecret"];
+            });
+
             services.Configure<StripesSettings>(Configuration.GetSection("Stripe"));
            
         }
